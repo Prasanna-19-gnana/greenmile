@@ -1,0 +1,158 @@
+'use client';
+
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+
+const modeIcons: Record<string, string> = {
+  car: '🚗',
+  bus: '🚌',
+  metro: '🚇',
+  cycle: '🚲',
+  walk: '🚶',
+};
+
+const modeLabels: Record<string, string> = {
+  car: 'Car',
+  bus: 'Bus',
+  metro: 'Metro',
+  cycle: 'Cycle',
+  walk: 'Walk',
+};
+
+function RewardContent() {
+  const searchParams = useSearchParams();
+  const selectedMode = searchParams.get('selectedMode') || 'bus';
+  const co2Saved = parseFloat(searchParams.get('co2Saved') || '0');
+  const pointsEarned = parseInt(searchParams.get('pointsEarned') || '0', 10);
+  const costSaved = parseFloat(searchParams.get('costSaved') || '0');
+  const source = searchParams.get('source') || '';
+  const destination = searchParams.get('destination') || '';
+
+  const stats = [
+    {
+      icon: modeIcons[selectedMode] || '🚀',
+      label: 'Mode Chosen',
+      value: modeLabels[selectedMode] || selectedMode,
+      color: 'bg-blue-50 text-blue-700',
+    },
+    {
+      icon: '🌍',
+      label: 'CO₂ Saved',
+      value: `${co2Saved.toFixed(2)} kg`,
+      color: 'bg-green-50 text-green-700',
+    },
+    {
+      icon: '⭐',
+      label: 'Points Earned',
+      value: `+${pointsEarned}`,
+      color: 'bg-yellow-50 text-yellow-700',
+    },
+    {
+      icon: '💰',
+      label: 'Cost Saved',
+      value: `₹${costSaved.toFixed(0)}`,
+      color: 'bg-purple-50 text-purple-700',
+    },
+  ];
+
+  return (
+    <div className="page-transition">
+      {/* Confetti-like decoration */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {[...Array(12)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full opacity-20 animate-bounce-gentle"
+            style={{
+              width: `${8 + Math.random() * 16}px`,
+              height: `${8 + Math.random() * 16}px`,
+              backgroundColor: ['#22c55e', '#86efac', '#4ade80', '#16a34a', '#dcfce7'][i % 5],
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${2 + Math.random() * 3}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      <div className="relative max-w-3xl mx-auto px-4 py-12 sm:py-16 text-center">
+        {/* Celebration Header */}
+        <div className="animate-count-up">
+          <span className="text-7xl sm:text-8xl inline-block">🎉</span>
+        </div>
+
+        <h1 className="mt-6 text-3xl sm:text-4xl font-bold text-gray-900 animate-fade-in">
+          Congratulations!
+        </h1>
+        <p className="mt-2 text-lg text-green-600 font-medium animate-fade-in">
+          You made a greener choice 🌿
+        </p>
+
+        {source && destination && (
+          <p className="mt-2 text-gray-500 text-sm animate-fade-in">
+            {source} → {destination}
+          </p>
+        )}
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 gap-4 mt-10">
+          {stats.map((stat, index) => (
+            <div
+              key={stat.label}
+              className={`bg-white rounded-2xl shadow-md p-6 border border-gray-50 animate-slide-up`}
+              style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'both' }}
+            >
+              <div className="text-3xl mb-2">{stat.icon}</div>
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900 animate-count-up">
+                {stat.value}
+              </div>
+              <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Impact Message */}
+        <div className="mt-8 bg-green-50 rounded-2xl p-6 border border-green-100 animate-fade-in">
+          <p className="text-green-800 font-medium">
+            🌳 Your CO₂ savings are equivalent to{' '}
+            <span className="font-bold">{(co2Saved / 21).toFixed(1)}</span> tree-days of carbon
+            absorption!
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-200 shadow-lg shadow-green-600/25 hover:shadow-xl hover:-translate-y-0.5"
+          >
+            View Dashboard →
+          </Link>
+          <Link
+            href="/compare"
+            className="inline-flex items-center text-green-700 hover:text-green-800 font-medium py-3 px-6 rounded-xl border border-green-200 hover:bg-green-50 transition-all duration-200"
+          >
+            Take Another Trip →
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function RewardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      }
+    >
+      <RewardContent />
+    </Suspense>
+  );
+}

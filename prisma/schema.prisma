@@ -1,0 +1,77 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./greenmile.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id             Int           @id @default(autoincrement())
+  name           String
+  email          String        @unique
+  totalPoints    Int           @default(0)
+  totalCo2Saved  Float         @default(0)
+  streak         Int           @default(0)
+  longestStreak  Int           @default(0)
+  createdAt      DateTime      @default(now())
+  
+  trips          Trip[]
+  redemptions    Redemption[]
+}
+
+model Trip {
+  id            Int        @id @default(autoincrement())
+  userId        Int
+  source        String
+  destination   String
+  totalDistance Float
+  totalDuration Float      // in minutes
+  totalCo2      Float
+  co2Saved      Float
+  pointsEarned  Int
+  isGreen       Boolean
+  createdAt     DateTime   @default(now())
+  
+  user          User       @relation(fields: [userId], references: [id])
+  legs          TripLeg[]
+}
+
+model TripLeg {
+  id            Int      @id @default(autoincrement())
+  tripId        Int
+  mode          String
+  distance      Float
+  duration      Float
+  co2Emitted    Float
+  
+  trip          Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+}
+
+model Reward {
+  id             Int           @id @default(autoincrement())
+  title          String
+  pointsRequired Int
+  description    String
+  
+  redemptions    Redemption[]
+}
+
+model Redemption {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  rewardId   Int
+  redeemedAt DateTime @default(now())
+  
+  user       User     @relation(fields: [userId], references: [id])
+  reward     Reward   @relation(fields: [rewardId], references: [id])
+}
+
+model CommunityStat {
+  id                 Int      @id @default(autoincrement())
+  name               String   @unique
+  totalUsers         Int      @default(0)
+  totalCo2Saved      Float    @default(0)
+  totalGreenTrips    Int      @default(0)
+}

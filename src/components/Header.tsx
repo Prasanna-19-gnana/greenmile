@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 const navLinks = [
   { href: '/compare', label: 'Compare' },
@@ -11,6 +11,30 @@ const navLinks = [
   { href: '/community', label: 'Community' },
   { href: '/about', label: 'About' },
 ];
+
+function LiveClock() {
+  const [time, setTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setTime(new Date());
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  if (!time) return <div className="hidden md:block w-[140px]" />;
+
+  return (
+    <div className="hidden md:flex items-center text-xs font-medium text-gray-500 bg-gray-50/80 px-3 py-1.5 rounded-full border border-gray-100/50 shadow-sm">
+      {new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      }).format(time)}
+    </div>
+  );
+}
 
 export default function Header() {
   const pathname = usePathname();
@@ -30,25 +54,29 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href || pathname?.startsWith(link.href + '/');
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  isActive
-                    ? 'bg-green-50 text-green-700 shadow-sm'
-                    : 'text-gray-600 hover:text-green-700 hover:bg-green-50/50'
-                }`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </nav>
+        {/* Desktop Nav & Clock */}
+        <div className="hidden md:flex items-center gap-4">
+          <nav className="flex items-center gap-1">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || pathname?.startsWith(link.href + '/');
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-green-50 text-green-700 shadow-sm'
+                      : 'text-gray-600 hover:text-green-700 hover:bg-green-50/50'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="h-6 w-px bg-gray-200"></div>
+          <LiveClock />
+        </div>
 
         {/* Mobile Hamburger */}
         <button

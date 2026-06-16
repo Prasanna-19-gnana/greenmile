@@ -51,6 +51,34 @@ export async function POST(request: NextRequest) {
     const isGreen = selectedMode !== 'car_direct' && selectedMode !== 'route_time' && co2Saved > 0;
     const costSaved = Math.round(carCost - totalCost);
 
+    const lastTrip = await prisma.trip.findFirst({
+      where: { userId },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    let newStreak = user.streak;
+    let newLongestStreak = user.longestStreak || 0;
+
+    if (lastTrip) {
+      const lastDate = new Date(lastTrip.createdAt);
+      lastDate.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const diffTime = today.getTime() - lastDate.getTime();
+      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
+      
+      if (diffDays === 1) {
+        newStreak += 1;
+      } else if (diffDays > 1) {
+        newStreak = 1; // missed a day
+      }
+    } else {
+      newStreak = 1; // first trip ever
+    }
+    
+    newLongestStreak = Math.max(newLongestStreak, newStreak);
+
     const trip = await prisma.trip.create({
       data: {
         userId,
@@ -74,7 +102,8 @@ export async function POST(request: NextRequest) {
       data: {
         totalPoints: { increment: pointsEarned },
         totalCo2Saved: { increment: co2Saved },
-        streak: { increment: 1 }
+        streak: newStreak,
+        longestStreak: newLongestStreak
       }
     });
 

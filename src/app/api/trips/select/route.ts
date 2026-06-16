@@ -51,30 +51,40 @@ export async function POST(request: NextRequest) {
     const isGreen = selectedMode !== 'car_direct' && selectedMode !== 'route_time' && co2Saved > 0;
     const costSaved = Math.round(carCost - totalCost);
 
-    const lastTrip = await prisma.trip.findFirst({
+    const allTrips = await prisma.trip.findMany({
       where: { userId },
+      select: { createdAt: true },
       orderBy: { createdAt: 'desc' }
     });
 
-    let newStreak = user.streak;
     let newLongestStreak = user.longestStreak || 0;
+    let newStreak = 1;
+    if (allTrips.length > 0) {
+      const uniqueDays = new Set<number>();
+      
+      // Add today's trip (the one being created right now)
+      const now = new Date();
+      now.setHours(0, 0, 0, 0);
+      uniqueDays.add(now.getTime());
 
-    if (lastTrip) {
-      const lastDate = new Date(lastTrip.createdAt);
-      lastDate.setHours(0, 0, 0, 0);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      
-      const diffTime = today.getTime() - lastDate.getTime();
-      const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
-      
-      if (diffDays === 1) {
-        newStreak += 1;
-      } else if (diffDays > 1) {
-        newStreak = 1; // missed a day
+      for (const trip of allTrips) {
+        const d = new Date(trip.createdAt);
+        d.setHours(0, 0, 0, 0);
+        uniqueDays.add(d.getTime());
       }
-    } else {
-      newStreak = 1; // first trip ever
+
+      const sortedDays = Array.from(uniqueDays).sort((a, b) => b - a); // descending
+      
+      let currentStreak = 1;
+      for (let i = 0; i < sortedDays.length - 1; i++) {
+        const diff = sortedDays[i] - sortedDays[i + 1];
+        if (diff === 86400000) { // exactly 1 day
+          currentStreak++;
+        } else {
+          break; // streak broken
+        }
+      }
+      newStreak = currentStreak;
     }
     
     newLongestStreak = Math.max(newLongestStreak, newStreak);

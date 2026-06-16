@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 import { MODE_LABELS } from '@/lib/calculations';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   _request: NextRequest,
   { params }: { params: { userId: string } },
@@ -12,11 +14,15 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid userId' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
+    const user = await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        name: 'Demo User',
+        email: `user${userId}@greenmile.app`,
+      }
+    });
     const recentTrips = await prisma.trip.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },

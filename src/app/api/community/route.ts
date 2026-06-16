@@ -1,15 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(_request: NextRequest) {
   try {
-    const community = await prisma.communityStat.findUnique({
-      where: { id: 1 }
+    const community = await prisma.communityStat.upsert({
+      where: { id: 1 },
+      update: {},
+      create: {
+        id: 1,
+        name: 'Global Community',
+        totalUsers: 1,
+        totalCo2Saved: 0,
+        totalGreenTrips: 0
+      }
     });
-
-    if (!community) {
-      return NextResponse.json({ error: 'Community data not found' }, { status: 404 });
-    }
 
     const treeEquivalent = Math.round((community.totalCo2Saved / 20) * 100) / 100;
 

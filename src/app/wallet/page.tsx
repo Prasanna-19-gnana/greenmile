@@ -19,7 +19,7 @@ export default function Wallet() {
       const rewData = await rewRes.json();
       
       setBalance(dashData?.userInfo?.total_points || 0);
-      setRewards(rewData);
+      setRewards(rewData?.rewards || []);
     } catch (error) {
       console.error('Error fetching wallet:', error);
     } finally {

@@ -29,11 +29,18 @@ function RewardContent() {
   const source = searchParams.get('source') || '';
   const destination = searchParams.get('destination') || '';
 
+  const formatLabel = (mode: string) => {
+    if (mode.startsWith('route_')) {
+      return mode.replace('route_', '').charAt(0).toUpperCase() + mode.replace('route_', '').slice(1) + ' Route';
+    }
+    return modeLabels[mode] || mode;
+  };
+
   const stats = [
     {
       icon: modeIcons[selectedMode] || '🚀',
       label: 'Mode Chosen',
-      value: modeLabels[selectedMode] || selectedMode,
+      value: formatLabel(selectedMode),
       color: 'bg-blue-50 text-blue-700',
     },
     {
@@ -47,12 +54,6 @@ function RewardContent() {
       label: 'Points Earned',
       value: `+${pointsEarned}`,
       color: 'bg-yellow-50 text-yellow-700',
-    },
-    {
-      icon: '💰',
-      label: 'Cost Saved',
-      value: `₹${costSaved.toFixed(0)}`,
-      color: 'bg-purple-50 text-purple-700',
     },
   ];
 
@@ -97,7 +98,7 @@ function RewardContent() {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4 mt-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10">
           {stats.map((stat, index) => (
             <div
               key={stat.label}

@@ -105,11 +105,11 @@ export default function Dashboard() {
                         <td className="py-4 font-medium">{trip.source} <span className="text-muted-foreground mx-1">→</span> {trip.destination}</td>
                         <td className="py-4 capitalize">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-                            {trip.selected_mode}
+                            {trip.selectedMode}
                           </span>
                         </td>
-                        <td className="py-4 text-green-500 font-medium text-right">+{trip.co2_saved.toFixed(1)} kg</td>
-                        <td className="py-4 text-yellow-500 font-medium text-right">+{trip.points_earned}</td>
+                        <td className="py-4 text-green-500 font-medium text-right">+{trip.co2Saved.toFixed(1)} kg</td>
+                        <td className="py-4 text-yellow-500 font-medium text-right">+{trip.pointsEarned}</td>
                       </tr>
                     ))
                   ) : (

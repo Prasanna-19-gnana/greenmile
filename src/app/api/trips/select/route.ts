@@ -13,10 +13,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing or invalid fields' }, { status: 400 });
     }
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    const user = await prisma.user.upsert({
+      where: { id: userId },
+      update: {},
+      create: {
+        id: userId,
+        name: 'Demo User',
+        email: `user${userId}@greenmile.app`,
+      }
+    });
 
     // Reference base values
     const carDist = distance;
@@ -74,11 +79,18 @@ export async function POST(request: NextRequest) {
     });
 
     if (isGreen) {
-      await prisma.communityStat.update({
+      await prisma.communityStat.upsert({
         where: { id: 1 },
-        data: {
+        update: {
           totalGreenTrips: { increment: 1 },
           totalCo2Saved: { increment: co2Saved }
+        },
+        create: {
+          id: 1,
+          name: 'Global Community',
+          totalUsers: 1,
+          totalCo2Saved: co2Saved,
+          totalGreenTrips: 1
         }
       });
     }

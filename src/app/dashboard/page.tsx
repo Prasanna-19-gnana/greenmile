@@ -52,11 +52,11 @@ export default function Dashboard() {
   }
 
   const statCards = [
-    { label: "Total Trips", value: data?.stats?.totalTrips || 0, icon: <Route className="w-5 h-5 text-blue-500" />, color: "border-blue-500/20 bg-blue-500/5" },
-    { label: "CO₂ Saved", value: `${data?.userInfo?.total_co2_saved?.toFixed(1) || 0} kg`, icon: <Leaf className="w-5 h-5 text-green-500" />, color: "border-green-500/20 bg-green-500/5" },
-    { label: "Green Points", value: data?.userInfo?.total_points || 0, icon: <Trophy className="w-5 h-5 text-yellow-500" />, color: "border-yellow-500/20 bg-yellow-500/5" },
-    { label: "Streak", value: `${data?.userInfo?.streak || 0} days`, icon: <Flame className="w-5 h-5 text-orange-500" />, color: "border-orange-500/20 bg-orange-500/5" },
-    { label: "Best Mode", value: data?.bestMode || 'N/A', icon: <Activity className="w-5 h-5 text-purple-500" />, color: "border-purple-500/20 bg-purple-500/5", capitalize: true },
+    { label: "Total Trips", value: data?.recentTrips?.length || 0, icon: <Route className="w-5 h-5 text-blue-500" />, color: "border-blue-500/20 bg-blue-500/5" },
+    { label: "CO₂ Saved", value: `${data?.user?.totalCo2Saved?.toFixed(1) || 0} kg`, icon: <Leaf className="w-5 h-5 text-green-500" />, color: "border-green-500/20 bg-green-500/5" },
+    { label: "Green Points", value: data?.user?.totalPoints || 0, icon: <Trophy className="w-5 h-5 text-yellow-500" />, color: "border-yellow-500/20 bg-yellow-500/5" },
+    { label: "Streak", value: `${data?.user?.streak || 0} days`, icon: <Flame className="w-5 h-5 text-orange-500" />, color: "border-orange-500/20 bg-orange-500/5" },
+    { label: "Best Mode", value: data?.bestMode?.label || 'N/A', icon: <Activity className="w-5 h-5 text-purple-500" />, color: "border-purple-500/20 bg-purple-500/5", capitalize: true },
   ];
 
   return (

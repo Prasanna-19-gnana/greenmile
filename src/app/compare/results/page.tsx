@@ -126,6 +126,7 @@ function ResultsContent() {
       if (!res.ok) {
         const errorData = await res.json();
         console.error('Server error saving trip:', errorData);
+        alert(`Server Error: ${errorData.error}`);
         throw new Error('Failed to save trip to database');
       }
 
@@ -139,8 +140,10 @@ function ResultsContent() {
         destination,
       });
       router.push(`/reward?${params.toString()}`);
-    } catch {
-      alert('Failed to select route. Please try again.');
+    } catch (err: any) {
+      if (err.message !== 'Failed to save trip to database') {
+        alert('Failed to select route. Please try again.');
+      }
     } finally {
       setSelecting(null);
     }

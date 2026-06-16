@@ -143,8 +143,8 @@ export async function POST(request: NextRequest) {
       costSaved
     });
 
-  } catch (err: unknown) {
+  } catch (err: any) {
     console.error('[POST /api/trips/select]', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: err?.message || 'Internal server error' }, { status: 500 });
   }
 }

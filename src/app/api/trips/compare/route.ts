@@ -148,10 +148,10 @@ export async function POST(request: NextRequest) {
           toLat: typeof l.to === 'string' ? 0 : l.to.lat,
           toLng: typeof l.to === 'string' ? 0 : l.to.lng,
           mode: l.mode,
-          distance: Math.round(l.distance * 10) / 10,
-          duration: Math.round(l.duration),
-          co2Emitted: Math.round(l.co2 * 100) / 100,
-          cost: Math.round(l.cost),
+          distance: Math.round(l.distance * 10) / 10 || 0,
+          duration: Math.round(l.duration) || 0,
+          co2Emitted: Math.round(l.co2 * 100) / 100 || 0,
+          cost: Math.round(l.cost) || 0,
           intermediateStops: l.intermediateStops || [],
           intermediateCoords: l.intermediateCoords || []
         }))

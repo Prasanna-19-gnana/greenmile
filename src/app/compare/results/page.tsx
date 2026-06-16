@@ -122,6 +122,13 @@ function ResultsContent() {
           legs: route.legs
         }),
       });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error('Server error saving trip:', errorData);
+        throw new Error('Failed to save trip to database');
+      }
+
       const data = await res.json();
 
       const params = new URLSearchParams({

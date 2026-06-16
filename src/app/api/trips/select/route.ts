@@ -34,15 +34,15 @@ export async function POST(request: NextRequest) {
     let totalCost = 0;
 
     const legsData = legs.map((leg: any) => {
-      totalDistance += leg.distance;
-      totalDuration += leg.duration;
-      totalCo2 += leg.co2Emitted;
-      totalCost += leg.cost;
+      totalDistance += leg.distance || 0;
+      totalDuration += leg.duration || 0;
+      totalCo2 += leg.co2Emitted || 0;
+      totalCost += leg.cost || 0;
       return {
         mode: leg.mode,
-        distance: leg.distance,
-        duration: leg.duration,
-        co2Emitted: leg.co2Emitted
+        distance: leg.distance || 0,
+        duration: leg.duration || 0,
+        co2Emitted: leg.co2Emitted || 0
       };
     });
 

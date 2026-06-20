@@ -42,7 +42,23 @@ function normalizePlace(place: string): string {
   return place;
 }
 
-function getCoords(place: string, defaultFallback: [number, number]): [number, number] {
+async function fetchNominatimCoords(place: string): Promise<[number, number] | null> {
+  try {
+    const query = `${place}, Chennai, Tamil Nadu`;
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`, {
+      headers: { 'User-Agent': 'GreenMile-App' }
+    });
+    const data = await res.json();
+    if (data && data.length > 0) {
+      return [parseFloat(data[0].lat), parseFloat(data[0].lon)];
+    }
+  } catch (err) {
+    console.error('Nominatim error:', err);
+  }
+  return null;
+}
+
+async function getCoords(place: string, defaultFallback: [number, number]): Promise<[number, number]> {
   if (!place) return defaultFallback;
   const norm = normalizePlace(place);
   const match = Object.keys(GEOCODING).find(k => norm.toLowerCase() === k.toLowerCase() || norm.toLowerCase().includes(k.toLowerCase()));
@@ -51,6 +67,11 @@ function getCoords(place: string, defaultFallback: [number, number]): [number, n
   const station = getStationByName(norm);
   if (station) {
     return [station.lat, station.lng];
+  }
+  
+  const nominatim = await fetchNominatimCoords(place);
+  if (nominatim) {
+    return nominatim;
   }
   
   return defaultFallback;
@@ -68,8 +89,8 @@ export async function POST(request: NextRequest) {
     const normSource = normalizePlace(source);
     const normDest = normalizePlace(destination);
 
-    const startCoords = getCoords(source, GEOCODING['SRM Kattankulathur']);
-    const endCoords = getCoords(destination, GEOCODING['Guindy']);
+    const startCoords = await getCoords(source, GEOCODING['Chennai Central']);
+    const endCoords = await getCoords(destination, GEOCODING['Tambaram Railway Station']);
 
     const directDistance = getDistance(startCoords[0], startCoords[1], endCoords[0], endCoords[1]);
 
@@ -85,16 +106,41 @@ export async function POST(request: NextRequest) {
       allRoutes = [walkRoute, autoRoute];
     } else {
       const timeRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time');
-      const costRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'cost');
-      const co2Route = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'co2');
-      const balancedRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'balanced');
       
-      balancedRoute.label = "Best Balanced Route";
-      timeRoute.label = "Fastest Route";
-      co2Route.label = "Lowest Carbon Route";
-      costRoute.label = "Cheapest Route";
-      
-      allRoutes = [balancedRoute, timeRoute, co2Route, costRoute, carRoute];
+      const isTransitFailed = !timeRoute || (timeRoute.legs.length === 1 && timeRoute.legs[0].mode === 'car');
+
+      if (isTransitFailed) {
+        const cabRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'car');
+        cabRoute.id = 'route_cab';
+        cabRoute.label = 'Direct Cab';
+        cabRoute.legs[0].mode = 'cab';
+        cabRoute.legs[0].cost = cabRoute.legs[0].distance * 18;
+        cabRoute.totalCost = cabRoute.legs[0].cost;
+
+        const busRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'car');
+        busRoute.id = 'route_bus';
+        busRoute.label = 'Intercity Bus';
+        busRoute.legs[0].mode = 'bus';
+        busRoute.legs[0].co2 = (busRoute.legs[0].distance * 30) / 1000;
+        busRoute.legs[0].cost = busRoute.legs[0].distance * 1.5;
+        busRoute.legs[0].duration = busRoute.legs[0].distance * (60/40);
+        busRoute.totalCo2 = busRoute.legs[0].co2;
+        busRoute.totalCost = busRoute.legs[0].cost;
+        busRoute.totalDuration = busRoute.legs[0].duration;
+
+        allRoutes = [busRoute, carRoute, cabRoute];
+      } else {
+        const costRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'cost') || timeRoute;
+        const co2Route = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'co2') || timeRoute;
+        const balancedRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'balanced') || timeRoute;
+        
+        balancedRoute.label = "Best Balanced Route";
+        timeRoute.label = "Fastest Route";
+        co2Route.label = "Lowest Carbon Route";
+        costRoute.label = "Cheapest Route";
+        
+        allRoutes = [balancedRoute, timeRoute, co2Route, costRoute, carRoute];
+      }
     }
     const carCo2 = carRoute.totalCo2;
     const carCost = carRoute.totalCost;
@@ -171,8 +217,11 @@ export async function POST(request: NextRequest) {
       distance: Math.round(carRoute.totalDistance * 10) / 10,
       modes,
     });
-  } catch (err) {
-    console.error('[POST /api/trips/compare]', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  } catch (error: any) {
+    console.error('API Error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error', details: error.message, stack: error.stack },
+      { status: 500 }
+    );
   }
 }

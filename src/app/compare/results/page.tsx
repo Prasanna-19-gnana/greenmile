@@ -38,12 +38,13 @@ export interface MultiStageRoute {
 }
 
 const modeIcons: Record<string, React.ReactNode> = {
-  car: <Car className="w-5 h-5" />,
-  bus: <Bus className="w-5 h-5" />,
-  metro: <Train className="w-5 h-5" />,
-  train: <Train className="w-5 h-5" />,
-  cycle: <Bike className="w-5 h-5" />,
   walk: <Footprints className="w-5 h-5" />,
+  car: <Car className="w-5 h-5" />,
+  cab: <Car className="w-5 h-5" />,
+  train: <Train className="w-5 h-5" />,
+  metro: <Train className="w-5 h-5" />,
+  bus: <Bus className="w-5 h-5" />,
+  cycle: <Bike className="w-5 h-5" />,
 };
 
 function formatTime(minutes: number) {
@@ -82,13 +83,22 @@ function ResultsContent() {
         
         if (data.modes && Array.isArray(data.modes)) {
             const mappedRoutes: MultiStageRoute[] = data.modes.map((m: any) => ({
-                id: m.mode, 
+                id: m.id || m.mode || 'unknown', 
                 label: m.label,
-                legs: m.legs || [],
-                totalDistance: m.distance,
-                totalDuration: m.travel_time_min,
-                totalCo2: m.co2_emitted,
-                co2Saved: m.co2_saved,
+                legs: (m.legs || []).map((leg: any) => ({
+                    ...leg,
+                    fromName: leg.from?.name || leg.fromName || 'Unknown',
+                    toName: leg.to?.name || leg.toName || 'Unknown',
+                    fromLat: leg.from?.lat ?? leg.fromLat ?? 0,
+                    fromLng: leg.from?.lng ?? leg.fromLng ?? 0,
+                    toLat: leg.to?.lat ?? leg.toLat ?? 0,
+                    toLng: leg.to?.lng ?? leg.toLng ?? 0,
+                    co2Emitted: leg.co2 ?? leg.co2Emitted ?? 0,
+                })),
+                totalDistance: m.totalDistance || m.distance || 0,
+                totalDuration: m.totalDuration || m.travel_time_min || 0,
+                totalCo2: m.totalCo2 || m.co2_emitted || 0,
+                co2Saved: m.co2Saved || m.co2_saved || 0,
                 isRecommended: m.isRecommended,
                 geminiExplanation: m.geminiExplanation,
             }));

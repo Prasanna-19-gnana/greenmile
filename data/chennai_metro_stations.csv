@@ -1,0 +1,43 @@
+id,name,lat,lng,type
+m1,Wimco Nagar Depot Station,13.155,80.305,metro
+m2,Wimco Nagar Metro,13.149,80.302,metro
+m3,Thiruvottriyur,13.141,80.298,metro
+m4,Thiruvottriyur Theradi,13.135,80.295,metro
+m5,Kaladipet,13.128,80.293,metro
+m6,TollGate,13.12,80.29,metro
+m7,New Washermanpet,13.115,80.288,metro
+m8,Tondiarpet,13.111,80.286,metro
+m9,Sri Theagaraya College,13.109,80.284,metro
+m10,Washermanpet,13.107,80.287,metro
+m11,Mannadi,13.095,80.288,metro
+m12,High Court,13.087,80.285,metro
+m13,Puratchi Thalaivar Dr. M.G. Ramachandran Central,13.082,80.275,metro
+m14,Government Estate,13.069,80.272,metro
+m15,LIC,13.064,80.264,metro
+m16,Thousand Lights,13.056,80.254,metro
+m17,AG-DMS,13.048,80.249,metro
+m18,Teynampet,13.041,80.245,metro
+m19,Nandanam,13.031,80.237,metro
+m20,Saidapet Metro,13.024,80.227,metro
+m21,Little Mount,13.016,80.222,metro
+m22,Guindy Metro,13.009,80.213,metro
+m23,Arignar Anna Alandur,13.004,80.201,metro
+m24,OTA-Nanganallur Road,12.996,80.188,metro
+m25,Meenambakkam Metro,12.988,80.178,metro
+m26,Chennai Airport,12.981,80.17,metro
+g2,Egmore Metro,13.078,80.261,metro
+g3,Nehru Park,13.079,80.25,metro
+g4,Kilpauk Medical College,13.079,80.24,metro
+g5,Pachaiyappa's College,13.077,80.23,metro
+g6,Shenoy Nagar,13.078,80.22,metro
+g7,Anna Nagar East,13.083,80.215,metro
+g8,Anna Nagar Tower,13.084,80.205,metro
+g9,Thirumangalam,13.085,80.194,metro
+g10,Koyambedu,13.075,80.194,metro
+g11,Koyambedu Depot,13.067,80.195,metro
+g12,Puratchi Thalaivi Dr. J. Jayalalithaa CMBT,13.067,80.205,metro
+g13,Arumbakkam,13.061,80.208,metro
+g14,Vadapalani,13.05,80.211,metro
+g15,Ashok Nagar,13.038,80.21,metro
+g16,Ekkattuthangal,13.02,80.206,metro
+g18,St. Thomas Mount Metro,12.995,80.198,metro

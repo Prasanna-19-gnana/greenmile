@@ -7,6 +7,7 @@ export interface Station {
   lat: number;
   lng: number;
   type: 'metro' | 'train' | 'bus';
+  lines?: string[];
 }
 
 export interface Connection {
@@ -18,6 +19,7 @@ export interface Connection {
   cost: number;
   frequency_min: number;
   co2_factor: number;
+  line?: string;
 }
 
 export interface RouteLeg {
@@ -28,6 +30,7 @@ export interface RouteLeg {
   duration: number;
   cost: number;
   co2: number;
+  line?: string;
   intermediateStops?: string[];
   intermediateCoords?: [number, number][];
 }
@@ -74,11 +77,27 @@ function loadData() {
     adjacencyList[st.id] = [];
   });
 
-  connectionsData.forEach(conn => {
-    if (adjacencyList[conn.from]) {
-      adjacencyList[conn.from].push(conn);
+  connectionsData.forEach((conn: any) => {
+    // Map JSON properties to the interface expected by routing.ts
+    const mappedConn: Connection = {
+      from: conn.from,
+      to: conn.to,
+      mode: conn.mode,
+      distance_km: conn.distance || conn.distance_km || 0,
+      duration_min: conn.duration || conn.duration_min || 0,
+      cost: conn.cost || 0,
+      frequency_min: conn.frequency_min || 10, // default 10 min frequency for trains
+      co2_factor: conn.co2 || conn.co2_factor || 0,
+      line: conn.line
+    };
+
+    if (adjacencyList[mappedConn.from]) {
+      adjacencyList[mappedConn.from].push(mappedConn);
     }
   });
+
+  // Fuzzy distance-based walk graph generation has been removed
+  // We only use explicit lines and transfers from the JSON dataset now.
 
   isLoaded = true;
 }
@@ -175,27 +194,67 @@ export function findRoute(
 
   const WALKING_SPEED = 5; // km/h
 
-  // Connect start to top 5 nearest stations
-  Object.values(stations).forEach(st => {
-    const dStart = getDistance(startLat, startLng, st.lat, st.lng);
-    if (dStart < 5) { // within 5km walk
-      virtAdjacency[startId].push({
-        from: startId, to: st.id, mode: 'walk',
-        distance_km: dStart, duration_min: (dStart / WALKING_SPEED) * 60,
-        cost: 0, frequency_min: 0, co2_factor: 0
-      });
+  let startStations = Object.values(stations).map(st => ({
+    st,
+    dist: getDistance(startLat, startLng, st.lat, st.lng)
+  })).sort((a, b) => a.dist - b.dist);
+  startStations = startStations[0].dist < 1.5 ? startStations.slice(0, 1) : startStations.slice(0, 2);
+
+  startStations.forEach(({ st, dist }) => {
+    let mode: 'walk' | 'bike' | 'car' = 'walk';
+    let speed = WALKING_SPEED;
+    let cost = 0;
+    let co2 = 0;
+    
+    if (dist > 2 && dist <= 5) {
+      mode = 'bike'; // Auto
+      speed = 20;
+      cost = dist * 5;
+      co2 = 70;
+    } else if (dist > 5) {
+      mode = 'car'; // Cab
+      speed = 30;
+      cost = dist * 18;
+      co2 = 120;
     }
 
-    const dEnd = getDistance(st.lat, st.lng, endLat, endLng);
-    if (dEnd < 5) {
-      if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
-      // create a shallow copy so we don't mutate the global adjacencyList permanently for concurrent reqs
-      virtAdjacency[st.id] = [...virtAdjacency[st.id], {
-        from: st.id, to: endId, mode: 'walk',
-        distance_km: dEnd, duration_min: (dEnd / WALKING_SPEED) * 60,
-        cost: 0, frequency_min: 0, co2_factor: 0
-      }];
+    virtAdjacency[startId].push({
+      from: startId, to: st.id, mode,
+      distance_km: dist, duration_min: (dist / speed) * 60,
+      cost, frequency_min: 0, co2_factor: co2
+    });
+  });
+
+  let endStations = Object.values(stations).map(st => ({
+    st,
+    dist: getDistance(st.lat, st.lng, endLat, endLng)
+  })).sort((a, b) => a.dist - b.dist);
+  endStations = endStations[0].dist < 1.5 ? endStations.slice(0, 1) : endStations.slice(0, 2);
+
+  endStations.forEach(({ st, dist }) => {
+    let mode: 'walk' | 'bike' | 'car' = 'walk';
+    let speed = WALKING_SPEED;
+    let cost = 0;
+    let co2 = 0;
+    
+    if (dist > 2 && dist <= 5) {
+      mode = 'bike'; // Auto
+      speed = 20;
+      cost = dist * 5;
+      co2 = 70;
+    } else if (dist > 5) {
+      mode = 'car'; // Cab
+      speed = 30;
+      cost = dist * 18;
+      co2 = 120;
     }
+
+    if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
+    virtAdjacency[st.id] = [...virtAdjacency[st.id], {
+      from: st.id, to: endId, mode,
+      distance_km: dist, duration_min: (dist / speed) * 60,
+      cost, frequency_min: 0, co2_factor: co2
+    }];
   });
 
   // Dijkstra
@@ -203,9 +262,14 @@ export function findRoute(
   const previous: Record<string, Connection | null> = {};
   const pq = new PriorityQueue<string>();
 
+  // Ensure all nodes, including endId which might have no outgoing edges, are initialized
   Object.keys(virtAdjacency).forEach(node => {
     distances[node] = Infinity;
     previous[node] = null;
+    virtAdjacency[node].forEach(conn => {
+      distances[conn.to] = Infinity;
+      previous[conn.to] = null;
+    });
   });
 
   distances[startId] = 0;
@@ -252,14 +316,15 @@ export function findRoute(
       distance: conn.distance_km,
       duration: conn.duration_min,
       cost: conn.cost,
-      co2: (conn.distance_km * conn.co2_factor) / 1000
+      co2: (conn.distance_km * conn.co2_factor) / 1000,
+      line: conn.line
     });
     curr = conn.from;
   }
 
-  // If no path found, fallback to direct car
+  // If no path found, fallback to null so caller can decide
   if (legs.length === 0) {
-    return findRoute(startLat, startLng, startName, endLat, endLng, endName, weightType, 'car');
+    return null as any;
   }
 
   // Group consecutive legs of same mode
@@ -267,7 +332,7 @@ export function findRoute(
   if (legs.length > 0) {
     let currentGroup = { ...legs[0], intermediateStops: [] as string[], intermediateCoords: [] as [number, number][] };
     for (let i = 1; i < legs.length; i++) {
-      if (legs[i].mode === currentGroup.mode) {
+      if (legs[i].mode === currentGroup.mode && legs[i].line === currentGroup.line) {
         currentGroup.to = legs[i].to;
         currentGroup.distance += legs[i].distance;
         currentGroup.duration += legs[i].duration;

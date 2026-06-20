@@ -14,7 +14,6 @@ export default function ComparePage() {
   const router = useRouter();
   const [source, setSource] = useState('');
   const [destination, setDestination] = useState('');
-  const [distance, setDistance] = useState('');
   const [selectedRoute, setSelectedRoute] = useState<number | null>(null);
   const [error, setError] = useState('');
 
@@ -22,24 +21,18 @@ export default function ComparePage() {
     const route = demoRoutes[index];
     setSource(route.source);
     setDestination(route.destination);
-    setDistance(route.distance.toString());
     setSelectedRoute(index);
     setError('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!source.trim() || !destination.trim() || !distance.trim()) {
+    if (!source.trim() || !destination.trim()) {
       setError('Please fill in all fields.');
       return;
     }
-    const d = parseFloat(distance);
-    if (isNaN(d) || d <= 0) {
-      setError('Distance must be a positive number.');
-      return;
-    }
     setError('');
-    const params = new URLSearchParams({ source, destination, distance: d.toString() });
+    const params = new URLSearchParams({ source, destination });
     router.push(`/compare/results?${params.toString()}`);
   };
 
@@ -129,24 +122,7 @@ export default function ComparePage() {
                 />
               </div>
 
-              <div>
-                <label htmlFor="distance" className="block text-sm font-medium text-gray-700 mb-1">
-                  Distance (km)
-                </label>
-                <input
-                  id="distance"
-                  type="number"
-                  value={distance}
-                  onChange={(e) => {
-                    setDistance(e.target.value);
-                    setSelectedRoute(null);
-                  }}
-                  placeholder="e.g., 40"
-                  min="0.1"
-                  step="0.1"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 outline-none transition-all duration-200 text-sm"
-                />
-              </div>
+
 
               {error && (
                 <p className="text-red-500 text-sm bg-red-50 px-4 py-2 rounded-lg">{error}</p>

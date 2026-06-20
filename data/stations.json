@@ -1,1472 +1,475 @@
 [
   {
-    "id": "t1",
-    "name": "Chennai Beach Station",
-    "lat": 13.092,
-    "lng": 80.292,
-    "type": "train"
+    "id": "st_1",
+    "name": "Chennai Beach",
+    "lat": 13.0925,
+    "lng": 80.2933,
+    "type": "train",
+    "lines": [
+      "Suburban Train",
+      "MRTS"
+    ]
   },
   {
-    "id": "t2",
-    "name": "Chennai Fort Station",
+    "id": "st_2",
+    "name": "Chennai Fort",
     "lat": 13.082,
     "lng": 80.281,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train",
+      "MRTS"
+    ]
   },
   {
-    "id": "t3",
-    "name": "Chennai Park Station",
-    "lat": 13.081,
-    "lng": 80.273,
-    "type": "train"
+    "id": "st_3",
+    "name": "Chennai Park",
+    "lat": 13.0818,
+    "lng": 80.2736,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t4",
-    "name": "Chennai Egmore Station",
-    "lat": 13.078,
-    "lng": 80.261,
-    "type": "train"
+    "id": "st_4",
+    "name": "Chennai Egmore",
+    "lat": 13.0785,
+    "lng": 80.2608,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t5",
-    "name": "Chetpet Station",
-    "lat": 13.071,
-    "lng": 80.244,
-    "type": "train"
+    "id": "st_5",
+    "name": "Chetpet",
+    "lat": 13.0715,
+    "lng": 80.2435,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t6",
-    "name": "Nungambakkam Station",
-    "lat": 13.061,
-    "lng": 80.235,
-    "type": "train"
+    "id": "st_6",
+    "name": "Nungambakkam",
+    "lat": 13.0594,
+    "lng": 80.2355,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t7",
-    "name": "Kodambakkam Station",
-    "lat": 13.051,
-    "lng": 80.224,
-    "type": "train"
+    "id": "st_7",
+    "name": "Kodambakkam",
+    "lat": 13.0506,
+    "lng": 80.2268,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t8",
-    "name": "Mambalam Station",
+    "id": "st_8",
+    "name": "Mambalam",
     "lat": 13.039,
     "lng": 80.228,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t9",
-    "name": "Saidapet Station",
+    "id": "st_9",
+    "name": "Saidapet",
     "lat": 13.021,
     "lng": 80.221,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t10",
-    "name": "Guindy Railway Station",
+    "id": "st_10",
+    "name": "Guindy",
     "lat": 13.008,
     "lng": 80.213,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t11",
-    "name": "St Thomas Mount Station",
+    "id": "st_11",
+    "name": "St Thomas Mount",
     "lat": 12.995,
     "lng": 80.198,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train",
+      "MRTS"
+    ]
   },
   {
-    "id": "t12",
-    "name": "Palavanthangal Station",
+    "id": "st_12",
+    "name": "Pazhavanthangal",
     "lat": 12.986,
     "lng": 80.187,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t13",
-    "name": "Minambakkam Station",
-    "lat": 12.98,
-    "lng": 80.176,
-    "type": "train"
-  },
-  {
-    "id": "t14",
-    "name": "Tirusulam Station",
+    "id": "st_13",
+    "name": "Meenambakkam",
     "lat": 12.981,
+    "lng": 80.179,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
+  },
+  {
+    "id": "st_14",
+    "name": "Tirusulam",
+    "lat": 12.977,
     "lng": 80.165,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t15",
-    "name": "Pallavaram Station",
-    "lat": 12.968,
-    "lng": 80.15,
-    "type": "train"
+    "id": "st_15",
+    "name": "Pallavaram",
+    "lat": 12.969,
+    "lng": 80.148,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t16",
-    "name": "Chromepet Station",
-    "lat": 12.951,
-    "lng": 80.141,
-    "type": "train"
+    "id": "st_16",
+    "name": "Chromepet",
+    "lat": 12.954,
+    "lng": 80.138,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t17",
-    "name": "Tambaram Sanatorium Station",
-    "lat": 12.939,
-    "lng": 80.126,
-    "type": "train"
+    "id": "st_17",
+    "name": "Tambaram Sanatorium",
+    "lat": 12.937,
+    "lng": 80.122,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t18",
-    "name": "Tambaram Railway Station",
-    "lat": 12.924,
-    "lng": 80.114,
-    "type": "train"
+    "id": "st_18",
+    "name": "Tambaram",
+    "lat": 12.925,
+    "lng": 80.111,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t19",
-    "name": "Perungalathur Station",
+    "id": "st_19",
+    "name": "Perungalathur",
     "lat": 12.905,
-    "lng": 80.091,
-    "type": "train"
+    "lng": 80.095,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t20",
-    "name": "Vandalur Station",
-    "lat": 12.889,
-    "lng": 80.078,
-    "type": "train"
+    "id": "st_20",
+    "name": "Vandalur",
+    "lat": 12.888,
+    "lng": 80.084,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t21",
-    "name": "Urapakkam Station",
+    "id": "st_21",
+    "name": "Urapakkam",
     "lat": 12.868,
-    "lng": 80.069,
-    "type": "train"
+    "lng": 80.065,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t22",
-    "name": "Guduvancheri Station",
-    "lat": 12.846,
-    "lng": 80.059,
-    "type": "train"
+    "id": "st_22",
+    "name": "Guduvancheri",
+    "lat": 12.844,
+    "lng": 80.055,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t23",
-    "name": "Potheri Railway Station",
-    "lat": 12.823,
-    "lng": 80.044,
-    "type": "train"
-  },
-  {
-    "id": "t24",
-    "name": "Kattankulathur Railway Station",
-    "lat": 12.812,
+    "id": "st_23",
+    "name": "Potheri",
+    "lat": 12.822,
     "lng": 80.038,
-    "type": "train"
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t25",
-    "name": "Maraimalai Nagar Railway Station",
+    "id": "st_24",
+    "name": "Kattangulattur",
+    "lat": 12.812,
+    "lng": 80.026,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
+  },
+  {
+    "id": "st_25",
+    "name": "Maraimalai Nagar",
     "lat": 12.793,
-    "lng": 80.024,
-    "type": "train"
+    "lng": 80.013,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t26",
-    "name": "Singaperumal Koil Station",
-    "lat": 12.763,
-    "lng": 80.005,
-    "type": "train"
+    "id": "st_26",
+    "name": "Singaperumal Koil",
+    "lat": 12.76,
+    "lng": 79.998,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t27",
-    "name": "Paranur Station",
-    "lat": 12.73,
-    "lng": 79.992,
-    "type": "train"
+    "id": "st_27",
+    "name": "Paranur",
+    "lat": 12.721,
+    "lng": 79.986,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "t28",
-    "name": "Chengalpattu Jn",
-    "lat": 12.684,
-    "lng": 79.98,
-    "type": "train"
+    "id": "st_28",
+    "name": "Chengalpattu",
+    "lat": 12.695,
+    "lng": 79.976,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   },
   {
-    "id": "m1",
-    "name": "Wimco Nagar Depot Station",
-    "lat": 13.155,
-    "lng": 80.305,
-    "type": "metro"
+    "id": "st_29",
+    "name": "Chennai Park Town",
+    "lat": 13.0811,
+    "lng": 80.2747,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m2",
-    "name": "Wimco Nagar Metro",
-    "lat": 13.149,
-    "lng": 80.302,
-    "type": "metro"
+    "id": "st_30",
+    "name": "Chintadripet",
+    "lat": 13.072,
+    "lng": 80.274,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m3",
-    "name": "Thiruvottriyur",
-    "lat": 13.141,
-    "lng": 80.298,
-    "type": "metro"
-  },
-  {
-    "id": "m4",
-    "name": "Thiruvottriyur Theradi",
-    "lat": 13.135,
-    "lng": 80.295,
-    "type": "metro"
-  },
-  {
-    "id": "m5",
-    "name": "Kaladipet",
-    "lat": 13.128,
-    "lng": 80.293,
-    "type": "metro"
-  },
-  {
-    "id": "m6",
-    "name": "TollGate",
-    "lat": 13.12,
-    "lng": 80.29,
-    "type": "metro"
-  },
-  {
-    "id": "m7",
-    "name": "New Washermanpet",
-    "lat": 13.115,
-    "lng": 80.288,
-    "type": "metro"
-  },
-  {
-    "id": "m8",
-    "name": "Tondiarpet",
-    "lat": 13.111,
-    "lng": 80.286,
-    "type": "metro"
-  },
-  {
-    "id": "m9",
-    "name": "Sri Theagaraya College",
-    "lat": 13.109,
-    "lng": 80.284,
-    "type": "metro"
-  },
-  {
-    "id": "m10",
-    "name": "Washermanpet",
-    "lat": 13.107,
-    "lng": 80.287,
-    "type": "metro"
-  },
-  {
-    "id": "m11",
-    "name": "Mannadi",
-    "lat": 13.095,
-    "lng": 80.288,
-    "type": "metro"
-  },
-  {
-    "id": "m12",
-    "name": "High Court",
-    "lat": 13.087,
-    "lng": 80.285,
-    "type": "metro"
-  },
-  {
-    "id": "m13",
-    "name": "Puratchi Thalaivar Dr. M.G. Ramachandran Central",
-    "lat": 13.082,
-    "lng": 80.275,
-    "type": "metro"
-  },
-  {
-    "id": "m14",
-    "name": "Government Estate",
-    "lat": 13.069,
-    "lng": 80.272,
-    "type": "metro"
-  },
-  {
-    "id": "m15",
-    "name": "LIC",
+    "id": "st_31",
+    "name": "Chepauk",
     "lat": 13.064,
-    "lng": 80.264,
-    "type": "metro"
+    "lng": 80.281,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m16",
-    "name": "Thousand Lights",
-    "lat": 13.056,
-    "lng": 80.254,
-    "type": "metro"
+    "id": "st_32",
+    "name": "Thiruvallikeni",
+    "lat": 13.058,
+    "lng": 80.28,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m17",
-    "name": "AG-DMS",
-    "lat": 13.048,
-    "lng": 80.249,
-    "type": "metro"
+    "id": "st_33",
+    "name": "Light House",
+    "lat": 13.045,
+    "lng": 80.279,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m18",
-    "name": "Teynampet",
-    "lat": 13.041,
-    "lng": 80.245,
-    "type": "metro"
+    "id": "st_34",
+    "name": "Mundakanniamman Koil",
+    "lat": 13.037,
+    "lng": 80.274,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m19",
-    "name": "Nandanam",
-    "lat": 13.031,
-    "lng": 80.237,
-    "type": "metro"
+    "id": "st_35",
+    "name": "Thirumayilai",
+    "lat": 13.033,
+    "lng": 80.267,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m20",
-    "name": "Saidapet Metro",
-    "lat": 13.024,
-    "lng": 80.227,
-    "type": "metro"
+    "id": "st_36",
+    "name": "Mandaveli",
+    "lat": 13.023,
+    "lng": 80.26,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m21",
-    "name": "Little Mount",
-    "lat": 13.016,
-    "lng": 80.222,
-    "type": "metro"
+    "id": "st_37",
+    "name": "Greenways Road",
+    "lat": 13.018,
+    "lng": 80.252,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m22",
-    "name": "Guindy Metro",
-    "lat": 13.009,
-    "lng": 80.213,
-    "type": "metro"
+    "id": "st_38",
+    "name": "Kotturpuram",
+    "lat": 13.011,
+    "lng": 80.243,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m23",
-    "name": "Arignar Anna Alandur",
-    "lat": 13.004,
-    "lng": 80.201,
-    "type": "metro"
+    "id": "st_39",
+    "name": "Kasturba Nagar",
+    "lat": 13.001,
+    "lng": 80.248,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "m24",
-    "name": "OTA-Nanganallur Road",
-    "lat": 12.996,
-    "lng": 80.188,
-    "type": "metro"
-  },
-  {
-    "id": "m25",
-    "name": "Meenambakkam Metro",
-    "lat": 12.988,
-    "lng": 80.178,
-    "type": "metro"
-  },
-  {
-    "id": "m26",
-    "name": "Chennai Airport",
-    "lat": 12.981,
-    "lng": 80.17,
-    "type": "metro"
-  },
-  {
-    "id": "g2",
-    "name": "Egmore Metro",
-    "lat": 13.078,
-    "lng": 80.261,
-    "type": "metro"
-  },
-  {
-    "id": "g3",
-    "name": "Nehru Park",
-    "lat": 13.079,
+    "id": "st_40",
+    "name": "Indira Nagar",
+    "lat": 12.993,
     "lng": 80.25,
-    "type": "metro"
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "g4",
-    "name": "Kilpauk Medical College",
-    "lat": 13.079,
-    "lng": 80.24,
-    "type": "metro"
+    "id": "st_41",
+    "name": "Thiruvanmiyur",
+    "lat": 12.984,
+    "lng": 80.252,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "g5",
-    "name": "Pachaiyappa's College",
-    "lat": 13.077,
-    "lng": 80.23,
-    "type": "metro"
+    "id": "st_42",
+    "name": "Taramani",
+    "lat": 12.977,
+    "lng": 80.245,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "g6",
-    "name": "Shenoy Nagar",
-    "lat": 13.078,
-    "lng": 80.22,
-    "type": "metro"
+    "id": "st_43",
+    "name": "Perungudi",
+    "lat": 12.966,
+    "lng": 80.244,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "g7",
-    "name": "Anna Nagar East",
-    "lat": 13.083,
-    "lng": 80.215,
-    "type": "metro"
+    "id": "st_44",
+    "name": "Velachery",
+    "lat": 12.9754,
+    "lng": 80.2206,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
   },
   {
-    "id": "g8",
-    "name": "Anna Nagar Tower",
-    "lat": 13.084,
-    "lng": 80.205,
-    "type": "metro"
-  },
-  {
-    "id": "g9",
-    "name": "Thirumangalam",
-    "lat": 13.085,
-    "lng": 80.194,
-    "type": "metro"
-  },
-  {
-    "id": "g10",
-    "name": "Koyambedu",
-    "lat": 13.075,
-    "lng": 80.194,
-    "type": "metro"
-  },
-  {
-    "id": "g11",
-    "name": "Koyambedu Depot",
-    "lat": 13.067,
-    "lng": 80.195,
-    "type": "metro"
-  },
-  {
-    "id": "g12",
-    "name": "Puratchi Thalaivi Dr. J. Jayalalithaa CMBT",
-    "lat": 13.067,
-    "lng": 80.205,
-    "type": "metro"
-  },
-  {
-    "id": "g13",
-    "name": "Arumbakkam",
-    "lat": 13.061,
+    "id": "st_45",
+    "name": "Puzhuthivakkam",
+    "lat": 12.981,
     "lng": 80.208,
-    "type": "metro"
-  },
-  {
-    "id": "g14",
-    "name": "Vadapalani",
-    "lat": 13.05,
-    "lng": 80.211,
-    "type": "metro"
-  },
-  {
-    "id": "g15",
-    "name": "Ashok Nagar",
-    "lat": 13.038,
-    "lng": 80.21,
-    "type": "metro"
-  },
-  {
-    "id": "g16",
-    "name": "Ekkattuthangal",
-    "lat": 13.02,
-    "lng": 80.206,
-    "type": "metro"
-  },
-  {
-    "id": "g18",
-    "name": "St. Thomas Mount Metro",
-    "lat": 12.995,
-    "lng": 80.198,
-    "type": "metro"
-  },
-  {
-    "id": "b1",
-    "name": "CMBT (Koyambedu) Bus Stand",
-    "lat": 13.067,
-    "lng": 80.205,
-    "type": "bus"
-  },
-  {
-    "id": "b2",
-    "name": "Broadway Bus Stand",
-    "lat": 13.088,
-    "lng": 80.288,
-    "type": "bus"
-  },
-  {
-    "id": "b3",
-    "name": "Tambaram Bus Stand",
-    "lat": 12.923,
-    "lng": 80.113,
-    "type": "bus"
-  },
-  {
-    "id": "b4",
-    "name": "Guindy Bus Stand",
-    "lat": 13.008,
-    "lng": 80.214,
-    "type": "bus"
-  },
-  {
-    "id": "b5",
-    "name": "Kelambakkam Bus Stand",
-    "lat": 12.788,
-    "lng": 80.22,
-    "type": "bus"
-  },
-  {
-    "id": "b6",
-    "name": "T Nagar Bus Terminus",
-    "lat": 13.038,
-    "lng": 80.233,
-    "type": "bus"
-  },
-  {
-    "id": "syn_1",
-    "name": "Ashok Nagar Junction",
-    "lat": 12.836691742369581,
-    "lng": 80.18694787014334,
-    "type": "bus"
-  },
-  {
-    "id": "syn_2",
-    "name": "Pallikaranai Bus Stop",
-    "lat": 12.878348409605445,
-    "lng": 80.23790564629155,
-    "type": "bus"
-  },
-  {
-    "id": "syn_3",
-    "name": "Navalur Bus Stop",
-    "lat": 12.941826512374556,
-    "lng": 79.99234557460535,
-    "type": "bus"
-  },
-  {
-    "id": "syn_4",
-    "name": "Thiruvanmiyur Bus Stop",
-    "lat": 12.736248068341068,
-    "lng": 80.01589567375238,
-    "type": "bus"
-  },
-  {
-    "id": "syn_5",
-    "name": "Anna Nagar Junction",
-    "lat": 13.08589690561706,
-    "lng": 80.18683878647276,
-    "type": "bus"
-  },
-  {
-    "id": "syn_6",
-    "name": "Besant Nagar Cross",
-    "lat": 13.02779468435065,
-    "lng": 80.21982100606019,
-    "type": "bus"
-  },
-  {
-    "id": "syn_7",
-    "name": "Nungambakkam Cross",
-    "lat": 13.027075148736193,
-    "lng": 80.2196529862878,
-    "type": "bus"
-  },
-  {
-    "id": "syn_8",
-    "name": "Ramapuram Bus Stop",
-    "lat": 13.129914671636422,
-    "lng": 80.21025704582958,
-    "type": "bus"
-  },
-  {
-    "id": "syn_9",
-    "name": "Siruseri Junction",
-    "lat": 12.690891148777181,
-    "lng": 80.27965176818175,
-    "type": "bus"
-  },
-  {
-    "id": "syn_10",
-    "name": "Kilpauk Junction",
-    "lat": 13.015169676886877,
-    "lng": 79.98085454631382,
-    "type": "bus"
-  },
-  {
-    "id": "syn_11",
-    "name": "Madhavaram Cross",
-    "lat": 12.769124562045269,
-    "lng": 80.03683267473252,
-    "type": "bus"
-  },
-  {
-    "id": "syn_12",
-    "name": "Madipakkam Bus Stop",
-    "lat": 12.840155252055398,
-    "lng": 80.16708711623224,
-    "type": "bus"
-  },
-  {
-    "id": "syn_13",
-    "name": "Chetpet Junction",
-    "lat": 13.059721647728466,
-    "lng": 79.97470236382837,
-    "type": "bus"
-  },
-  {
-    "id": "syn_14",
-    "name": "Siruseri Bus Stop",
-    "lat": 12.897487581895119,
-    "lng": 80.12642780963165,
-    "type": "bus"
-  },
-  {
-    "id": "syn_15",
-    "name": "Besant Nagar Cross",
-    "lat": 13.112452423176805,
-    "lng": 80.08245915156502,
-    "type": "bus"
-  },
-  {
-    "id": "syn_16",
-    "name": "Vadapalani Cross",
-    "lat": 12.835321104662468,
-    "lng": 80.25397284827262,
-    "type": "bus"
-  },
-  {
-    "id": "syn_17",
-    "name": "Kilpauk Junction",
-    "lat": 12.650767184531652,
-    "lng": 80.20434684911203,
-    "type": "bus"
-  },
-  {
-    "id": "syn_18",
-    "name": "Chetpet Bus Stop",
-    "lat": 12.946168188437559,
-    "lng": 79.9955692483618,
-    "type": "bus"
-  },
-  {
-    "id": "syn_19",
-    "name": "Saligramam Junction",
-    "lat": 13.041613411032392,
-    "lng": 80.17829164047201,
-    "type": "bus"
-  },
-  {
-    "id": "syn_20",
-    "name": "Chetpet Bus Stop",
-    "lat": 12.997532023973525,
-    "lng": 80.2949520754198,
-    "type": "bus"
-  },
-  {
-    "id": "syn_21",
-    "name": "Navalur Junction",
-    "lat": 12.918091551526325,
-    "lng": 80.14750037849444,
-    "type": "bus"
-  },
-  {
-    "id": "syn_22",
-    "name": "Thiruvanmiyur Cross",
-    "lat": 12.807926356973473,
-    "lng": 80.01993428975632,
-    "type": "bus"
-  },
-  {
-    "id": "syn_23",
-    "name": "Navalur Bus Stop",
-    "lat": 13.13646307098934,
-    "lng": 80.10951990307267,
-    "type": "bus"
-  },
-  {
-    "id": "syn_24",
-    "name": "Pallikaranai Bus Stop",
-    "lat": 12.941313497258806,
-    "lng": 80.02984568650189,
-    "type": "bus"
-  },
-  {
-    "id": "syn_25",
-    "name": "Triplicane Bus Stop",
-    "lat": 13.102407397199126,
-    "lng": 79.95085123538918,
-    "type": "bus"
-  },
-  {
-    "id": "syn_26",
-    "name": "Triplicane Junction",
-    "lat": 13.048606966325838,
-    "lng": 80.1841456692324,
-    "type": "bus"
-  },
-  {
-    "id": "syn_27",
-    "name": "Kk Nagar Junction",
-    "lat": 12.987468365489582,
-    "lng": 80.21862396739671,
-    "type": "bus"
-  },
-  {
-    "id": "syn_28",
-    "name": "Pallikaranai Cross",
-    "lat": 13.063312712713202,
-    "lng": 80.12235641897445,
-    "type": "bus"
-  },
-  {
-    "id": "syn_29",
-    "name": "Saligramam Bus Stop",
-    "lat": 13.13822703251902,
-    "lng": 80.05596465370742,
-    "type": "bus"
-  },
-  {
-    "id": "syn_30",
-    "name": "Pallikaranai Cross",
-    "lat": 12.670148169131513,
-    "lng": 80.14861662951118,
-    "type": "bus"
-  },
-  {
-    "id": "syn_31",
-    "name": "Navalur Junction",
-    "lat": 13.068910880281779,
-    "lng": 80.16473239394931,
-    "type": "bus"
-  },
-  {
-    "id": "syn_32",
-    "name": "Madhavaram Bus Stop",
-    "lat": 12.876066496526843,
-    "lng": 79.97875120950044,
-    "type": "bus"
-  },
-  {
-    "id": "syn_33",
-    "name": "Velachery Junction",
-    "lat": 12.665015929248453,
-    "lng": 80.1497004118433,
-    "type": "bus"
-  },
-  {
-    "id": "syn_34",
-    "name": "Besant Nagar Bus Stop",
-    "lat": 12.65484192646041,
-    "lng": 79.95821068429456,
-    "type": "bus"
-  },
-  {
-    "id": "syn_35",
-    "name": "Vadapalani Junction",
-    "lat": 13.013201834831499,
-    "lng": 80.27503396837868,
-    "type": "bus"
-  },
-  {
-    "id": "syn_36",
-    "name": "Sholinganallur Cross",
-    "lat": 12.714856140374938,
-    "lng": 80.25250309651608,
-    "type": "bus"
-  },
-  {
-    "id": "syn_37",
-    "name": "Chetpet Bus Stop",
-    "lat": 12.8340362243302,
-    "lng": 80.22845061148331,
-    "type": "bus"
-  },
-  {
-    "id": "syn_38",
-    "name": "Porur Bus Stop",
-    "lat": 12.725307655098502,
-    "lng": 80.27641190755955,
-    "type": "bus"
-  },
-  {
-    "id": "syn_39",
-    "name": "Navalur Bus Stop",
-    "lat": 12.833791727808839,
-    "lng": 80.09996605365075,
-    "type": "bus"
-  },
-  {
-    "id": "syn_40",
-    "name": "Alwarpet Bus Stop",
-    "lat": 12.875762264628625,
-    "lng": 79.95029357280546,
-    "type": "bus"
-  },
-  {
-    "id": "syn_41",
-    "name": "Siruseri Bus Stop",
-    "lat": 12.729306229963298,
-    "lng": 80.10041817334381,
-    "type": "bus"
-  },
-  {
-    "id": "syn_42",
-    "name": "Thiruvanmiyur Cross",
-    "lat": 13.041814888132192,
-    "lng": 80.06219692169327,
-    "type": "bus"
-  },
-  {
-    "id": "syn_43",
-    "name": "Virugambakkam Junction",
-    "lat": 13.096906938469681,
-    "lng": 80.28983347845808,
-    "type": "bus"
-  },
-  {
-    "id": "syn_44",
-    "name": "Thiruvanmiyur Junction",
-    "lat": 13.149628333465744,
-    "lng": 80.11528887465568,
-    "type": "bus"
-  },
-  {
-    "id": "syn_45",
-    "name": "Valasaravakkam Cross",
-    "lat": 12.982879841239074,
-    "lng": 79.97691651714581,
-    "type": "bus"
-  },
-  {
-    "id": "syn_46",
-    "name": "Thiruvanmiyur Junction",
-    "lat": 12.777279830769695,
-    "lng": 80.14706691408651,
-    "type": "bus"
-  },
-  {
-    "id": "syn_47",
-    "name": "Valasaravakkam Cross",
-    "lat": 12.865219210007156,
-    "lng": 80.27053935754714,
-    "type": "bus"
-  },
-  {
-    "id": "syn_48",
-    "name": "Madhavaram Cross",
-    "lat": 13.14351145589303,
-    "lng": 80.17093958202321,
-    "type": "bus"
-  },
-  {
-    "id": "syn_49",
-    "name": "Ashok Nagar Bus Stop",
-    "lat": 12.917455768454635,
-    "lng": 79.98469708603052,
-    "type": "bus"
-  },
-  {
-    "id": "syn_50",
-    "name": "Siruseri Bus Stop",
-    "lat": 13.049882818831861,
-    "lng": 80.22732169642474,
-    "type": "bus"
-  },
-  {
-    "id": "syn_51",
-    "name": "Mylapore Junction",
-    "lat": 12.98008957841426,
-    "lng": 80.11984377643115,
-    "type": "bus"
-  },
-  {
-    "id": "syn_52",
-    "name": "Madipakkam Cross",
-    "lat": 12.90949434249856,
-    "lng": 80.27038694434148,
-    "type": "bus"
-  },
-  {
-    "id": "syn_53",
-    "name": "Triplicane Cross",
-    "lat": 12.703889018396149,
-    "lng": 80.18125126301688,
-    "type": "bus"
-  },
-  {
-    "id": "syn_54",
-    "name": "Kk Nagar Cross",
-    "lat": 13.01103426638712,
-    "lng": 80.01338030906345,
-    "type": "bus"
-  },
-  {
-    "id": "syn_55",
-    "name": "Nungambakkam Bus Stop",
-    "lat": 12.894181459662523,
-    "lng": 80.20029088133771,
-    "type": "bus"
-  },
-  {
-    "id": "syn_56",
-    "name": "Pallikaranai Bus Stop",
-    "lat": 12.938204317505498,
-    "lng": 80.0545889907162,
-    "type": "bus"
-  },
-  {
-    "id": "syn_57",
-    "name": "Medavakkam Cross",
-    "lat": 13.134865457920304,
-    "lng": 79.99773150155318,
-    "type": "bus"
-  },
-  {
-    "id": "syn_58",
-    "name": "Vadapalani Junction",
-    "lat": 12.777592306985627,
-    "lng": 80.17484370413536,
-    "type": "bus"
-  },
-  {
-    "id": "syn_59",
-    "name": "Besant Nagar Cross",
-    "lat": 12.916560582287731,
-    "lng": 80.1345953017551,
-    "type": "bus"
-  },
-  {
-    "id": "syn_60",
-    "name": "Vadapalani Junction",
-    "lat": 12.688517780421112,
-    "lng": 80.07775525433122,
-    "type": "bus"
-  },
-  {
-    "id": "syn_61",
-    "name": "Tondiarpet Bus Stop",
-    "lat": 12.82115998446684,
-    "lng": 80.07305851621281,
-    "type": "bus"
-  },
-  {
-    "id": "syn_62",
-    "name": "Nungambakkam Junction",
-    "lat": 12.714695635304336,
-    "lng": 80.06524737493945,
-    "type": "bus"
-  },
-  {
-    "id": "syn_63",
-    "name": "Chetpet Cross",
-    "lat": 12.687385559954448,
-    "lng": 80.03299612454668,
-    "type": "bus"
-  },
-  {
-    "id": "syn_64",
-    "name": "Ramapuram Cross",
-    "lat": 12.772744041106932,
-    "lng": 80.24000088499258,
-    "type": "bus"
-  },
-  {
-    "id": "syn_65",
-    "name": "Besant Nagar Junction",
-    "lat": 13.096888704443977,
-    "lng": 80.05965672103945,
-    "type": "bus"
-  },
-  {
-    "id": "syn_66",
-    "name": "Alwarpet Cross",
-    "lat": 13.008744110644583,
-    "lng": 79.9792499204951,
-    "type": "bus"
-  },
-  {
-    "id": "syn_67",
-    "name": "Padur Cross",
-    "lat": 13.041119591617633,
-    "lng": 80.02493592217904,
-    "type": "bus"
-  },
-  {
-    "id": "syn_68",
-    "name": "Pallikaranai Junction",
-    "lat": 12.675185480822602,
-    "lng": 80.17820871150477,
-    "type": "bus"
-  },
-  {
-    "id": "syn_69",
-    "name": "Porur Junction",
-    "lat": 12.75187804629067,
-    "lng": 79.98180948848307,
-    "type": "bus"
-  },
-  {
-    "id": "syn_70",
-    "name": "Virugambakkam Cross",
-    "lat": 13.106332071519695,
-    "lng": 80.22702932375385,
-    "type": "bus"
-  },
-  {
-    "id": "syn_71",
-    "name": "Pallikaranai Junction",
-    "lat": 12.826588719316247,
-    "lng": 79.9920119670797,
-    "type": "bus"
-  },
-  {
-    "id": "syn_72",
-    "name": "Vadapalani Cross",
-    "lat": 12.707304574883455,
-    "lng": 79.9784675115212,
-    "type": "bus"
-  },
-  {
-    "id": "syn_73",
-    "name": "Valasaravakkam Bus Stop",
-    "lat": 12.892742807790869,
-    "lng": 80.13242497515121,
-    "type": "bus"
-  },
-  {
-    "id": "syn_74",
-    "name": "Nungambakkam Cross",
-    "lat": 12.945079668295062,
-    "lng": 80.24415700199059,
-    "type": "bus"
-  },
-  {
-    "id": "syn_75",
-    "name": "Triplicane Junction",
-    "lat": 12.791702096930363,
-    "lng": 80.1236127285239,
-    "type": "bus"
-  },
-  {
-    "id": "syn_76",
-    "name": "Ashok Nagar Bus Stop",
-    "lat": 12.91635200051219,
-    "lng": 79.953264198604,
-    "type": "bus"
-  },
-  {
-    "id": "syn_77",
-    "name": "Virugambakkam Junction",
-    "lat": 13.09888842624208,
-    "lng": 80.28046443524435,
-    "type": "bus"
-  },
-  {
-    "id": "syn_78",
-    "name": "Kilpauk Junction",
-    "lat": 12.987845288633789,
-    "lng": 80.08023581125997,
-    "type": "bus"
-  },
-  {
-    "id": "syn_79",
-    "name": "Anna Nagar Cross",
-    "lat": 12.689589637433153,
-    "lng": 80.09782434083081,
-    "type": "bus"
-  },
-  {
-    "id": "syn_80",
-    "name": "Thiruvanmiyur Bus Stop",
-    "lat": 12.662393720590046,
-    "lng": 80.26300870046352,
-    "type": "bus"
-  },
-  {
-    "id": "syn_81",
-    "name": "Alwarpet Cross",
-    "lat": 13.064646227692645,
-    "lng": 80.04591518064018,
-    "type": "bus"
-  },
-  {
-    "id": "syn_82",
-    "name": "Kk Nagar Bus Stop",
-    "lat": 12.731593136071865,
-    "lng": 80.01230516609849,
-    "type": "bus"
-  },
-  {
-    "id": "syn_83",
-    "name": "Ashok Nagar Junction",
-    "lat": 13.00178343446189,
-    "lng": 79.97795713083022,
-    "type": "bus"
-  },
-  {
-    "id": "syn_84",
-    "name": "Alwarpet Cross",
-    "lat": 12.791417258883039,
-    "lng": 80.1306579273328,
-    "type": "bus"
-  },
-  {
-    "id": "syn_85",
-    "name": "Tondiarpet Cross",
-    "lat": 12.721775596475227,
-    "lng": 80.0864597557909,
-    "type": "bus"
-  },
-  {
-    "id": "syn_86",
-    "name": "Tondiarpet Bus Stop",
-    "lat": 12.802053302931732,
-    "lng": 79.98666048435963,
-    "type": "bus"
-  },
-  {
-    "id": "syn_87",
-    "name": "Royapuram Cross",
-    "lat": 12.767586552867684,
-    "lng": 79.9672556355707,
-    "type": "bus"
-  },
-  {
-    "id": "syn_88",
-    "name": "Mandaveli Junction",
-    "lat": 13.11778375025762,
-    "lng": 80.02107471219598,
-    "type": "bus"
-  },
-  {
-    "id": "syn_89",
-    "name": "Ramapuram Junction",
-    "lat": 12.709629420478006,
-    "lng": 80.19834863557514,
-    "type": "bus"
-  },
-  {
-    "id": "syn_90",
-    "name": "Madipakkam Cross",
-    "lat": 12.76783124026677,
-    "lng": 79.98878526581179,
-    "type": "bus"
-  },
-  {
-    "id": "syn_91",
-    "name": "Madipakkam Junction",
-    "lat": 12.740311322257774,
-    "lng": 79.95744986466465,
-    "type": "bus"
-  },
-  {
-    "id": "syn_92",
-    "name": "Medavakkam Cross",
-    "lat": 13.05735011758851,
-    "lng": 80.11857058412163,
-    "type": "bus"
-  },
-  {
-    "id": "syn_93",
-    "name": "Perambur Cross",
-    "lat": 12.854471638553521,
-    "lng": 80.28248739087978,
-    "type": "bus"
-  },
-  {
-    "id": "syn_94",
-    "name": "Tondiarpet Junction",
-    "lat": 13.03345956600305,
-    "lng": 80.06314736522921,
-    "type": "bus"
-  },
-  {
-    "id": "syn_95",
-    "name": "Padur Cross",
-    "lat": 12.903106567663801,
-    "lng": 80.21809874731022,
-    "type": "bus"
-  },
-  {
-    "id": "syn_96",
-    "name": "Thiruvanmiyur Cross",
-    "lat": 13.142921778869832,
-    "lng": 80.0981054995339,
-    "type": "bus"
-  },
-  {
-    "id": "syn_97",
-    "name": "Saligramam Bus Stop",
-    "lat": 13.05707012937288,
-    "lng": 80.045365235575,
-    "type": "bus"
-  },
-  {
-    "id": "syn_98",
-    "name": "Perambur Cross",
-    "lat": 12.934846549319916,
-    "lng": 80.0509771964877,
-    "type": "bus"
-  },
-  {
-    "id": "syn_99",
-    "name": "Perambur Cross",
-    "lat": 13.067386021917303,
-    "lng": 80.22112356903992,
-    "type": "bus"
-  },
-  {
-    "id": "syn_100",
-    "name": "Vadapalani Cross",
-    "lat": 12.9809220563519,
-    "lng": 80.12887549657638,
-    "type": "bus"
-  },
-  {
-    "id": "syn_101",
-    "name": "Alwarpet Bus Stop",
-    "lat": 12.703608604168044,
-    "lng": 80.07974024543962,
-    "type": "bus"
-  },
-  {
-    "id": "syn_102",
-    "name": "Tondiarpet Bus Stop",
-    "lat": 12.707288767072246,
-    "lng": 79.96846939553828,
-    "type": "bus"
-  },
-  {
-    "id": "syn_103",
-    "name": "Adyar Cross",
-    "lat": 13.114469213955067,
-    "lng": 80.2132187916109,
-    "type": "bus"
-  },
-  {
-    "id": "syn_104",
-    "name": "Kk Nagar Bus Stop",
-    "lat": 13.027098337595607,
-    "lng": 80.1007047033786,
-    "type": "bus"
-  },
-  {
-    "id": "syn_105",
-    "name": "Perambur Cross",
-    "lat": 12.907298718803997,
-    "lng": 79.98722195820532,
-    "type": "bus"
-  },
-  {
-    "id": "syn_106",
-    "name": "Valasaravakkam Cross",
-    "lat": 12.692060435154888,
-    "lng": 80.00969097610547,
-    "type": "bus"
-  },
-  {
-    "id": "syn_107",
-    "name": "Kilpauk Bus Stop",
-    "lat": 12.785836616293519,
-    "lng": 80.25533850818854,
-    "type": "bus"
-  },
-  {
-    "id": "syn_108",
-    "name": "Siruseri Bus Stop",
-    "lat": 13.149336726477088,
-    "lng": 80.07926604519372,
-    "type": "bus"
-  },
-  {
-    "id": "syn_109",
-    "name": "Kilpauk Bus Stop",
-    "lat": 13.101597316686773,
-    "lng": 80.21394701431085,
-    "type": "bus"
-  },
-  {
-    "id": "syn_110",
-    "name": "Ramapuram Bus Stop",
-    "lat": 12.775132416328722,
-    "lng": 80.08043514721312,
-    "type": "bus"
-  },
-  {
-    "id": "syn_111",
-    "name": "Nungambakkam Junction",
-    "lat": 12.677013456228089,
-    "lng": 80.29049683564828,
-    "type": "bus"
-  },
-  {
-    "id": "syn_112",
-    "name": "Mylapore Cross",
-    "lat": 12.811260883445684,
-    "lng": 80.17243926107497,
-    "type": "bus"
-  },
-  {
-    "id": "syn_113",
-    "name": "Porur Cross",
-    "lat": 12.902846947044777,
-    "lng": 80.05075368808481,
-    "type": "bus"
-  },
-  {
-    "id": "syn_114",
-    "name": "Royapuram Bus Stop",
-    "lat": 13.064704316212456,
-    "lng": 80.09547674928602,
-    "type": "bus"
-  },
-  {
-    "id": "syn_115",
-    "name": "Medavakkam Bus Stop",
-    "lat": 12.840114415288422,
-    "lng": 80.1117267990821,
-    "type": "bus"
-  },
-  {
-    "id": "syn_116",
-    "name": "Padur Cross",
-    "lat": 12.811638168527123,
-    "lng": 80.22409840697448,
-    "type": "bus"
-  },
-  {
-    "id": "syn_117",
-    "name": "Medavakkam Bus Stop",
-    "lat": 12.80904478184992,
-    "lng": 80.0031408324404,
-    "type": "bus"
-  },
-  {
-    "id": "syn_118",
-    "name": "Navalur Cross",
-    "lat": 13.070826301546884,
-    "lng": 80.15269579938474,
-    "type": "bus"
-  },
-  {
-    "id": "syn_119",
-    "name": "Triplicane Bus Stop",
-    "lat": 12.915408036815148,
-    "lng": 80.26437057504774,
-    "type": "bus"
-  },
-  {
-    "id": "syn_120",
-    "name": "Velachery Cross",
-    "lat": 12.84199386526974,
-    "lng": 80.10251813125663,
-    "type": "bus"
-  },
-  {
-    "id": "syn_121",
-    "name": "Triplicane Bus Stop",
-    "lat": 12.952260933117584,
-    "lng": 80.2613959156444,
-    "type": "bus"
-  },
-  {
-    "id": "syn_122",
-    "name": "Thiruvanmiyur Junction",
-    "lat": 12.977034726041566,
-    "lng": 80.05819504112807,
-    "type": "bus"
-  },
-  {
-    "id": "syn_123",
-    "name": "Velachery Junction",
-    "lat": 12.937200151368627,
-    "lng": 80.26845430472252,
-    "type": "bus"
-  },
-  {
-    "id": "syn_124",
-    "name": "Velachery Junction",
-    "lat": 12.940730727116682,
-    "lng": 80.1176654813923,
-    "type": "bus"
-  },
-  {
-    "id": "syn_125",
-    "name": "Porur Junction",
-    "lat": 13.108400307306637,
-    "lng": 79.96275994107374,
-    "type": "bus"
-  },
-  {
-    "id": "syn_126",
-    "name": "Kk Nagar Junction",
-    "lat": 12.685058374818656,
-    "lng": 80.02658855034947,
-    "type": "bus"
-  },
-  {
-    "id": "syn_127",
-    "name": "Thiruvanmiyur Junction",
-    "lat": 13.051215404687627,
-    "lng": 80.15659401503726,
-    "type": "bus"
-  },
-  {
-    "id": "syn_128",
-    "name": "Virugambakkam Junction",
-    "lat": 12.672140428992716,
-    "lng": 79.98587796981398,
-    "type": "bus"
-  },
-  {
-    "id": "syn_129",
-    "name": "Virugambakkam Junction",
-    "lat": 12.875099344239121,
-    "lng": 80.2386598173895,
-    "type": "bus"
-  },
-  {
-    "id": "syn_130",
-    "name": "Madhavaram Bus Stop",
-    "lat": 12.78290251933664,
-    "lng": 80.05299064797893,
-    "type": "bus"
-  },
-  {
-    "id": "syn_131",
-    "name": "Navalur Cross",
-    "lat": 12.817932337472854,
-    "lng": 80.22455573028239,
-    "type": "bus"
-  },
-  {
-    "id": "syn_132",
-    "name": "Valasaravakkam Bus Stop",
-    "lat": 13.13582366066948,
-    "lng": 80.03168352738165,
-    "type": "bus"
-  },
-  {
-    "id": "syn_133",
-    "name": "Madhavaram Bus Stop",
-    "lat": 13.017695380732903,
-    "lng": 80.0504754639951,
-    "type": "bus"
-  },
-  {
-    "id": "syn_134",
-    "name": "Ashok Nagar Bus Stop",
-    "lat": 12.907195065794479,
-    "lng": 79.99110031216172,
-    "type": "bus"
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
+  },
+  {
+    "id": "st_46",
+    "name": "Adambakkam",
+    "lat": 12.987,
+    "lng": 80.203,
+    "type": "train",
+    "lines": [
+      "MRTS"
+    ]
+  },
+  {
+    "id": "st_47",
+    "name": "Chennai Central",
+    "lat": 13.0827,
+    "lng": 80.2707,
+    "type": "train",
+    "lines": [
+      "Suburban Train"
+    ]
   }
 ]

@@ -14,13 +14,13 @@ const REWARD_TIERS = [
 const SPIN_COST = 50;
 
 const SPIN_PRIZES = [
-  { title: 'No Reward', prob: 45, type: 'none', icon: '😢' },
-  { title: '+20 Bonus Points', prob: 20, type: 'points', value: 20, icon: '⭐' },
-  { title: '+50 Bonus Points', prob: 15, type: 'points', value: 50, icon: '🌟' },
-  { title: '₹50 Metro Recharge', prob: 8, type: 'reward', icon: '🚇' },
-  { title: 'Eco Cafe Discount', prob: 5, type: 'reward', icon: '☕' },
-  { title: 'Plant-a-Tree Certificate', prob: 5, type: 'reward', icon: '🌳' },
-  { title: 'Green Champion Badge', prob: 2, type: 'reward', icon: '🏅' },
+  { title: 'No Reward', prob: 45, type: 'none', icon: '😢', shortName: 'Oops', color: '#ef4444' }, // Red
+  { title: '+20 Bonus Points', prob: 20, type: 'points', value: 20, icon: '⭐', shortName: '+20 pts', color: '#f97316' }, // Orange
+  { title: '+50 Bonus Points', prob: 15, type: 'points', value: 50, icon: '🌟', shortName: '+50 pts', color: '#eab308' }, // Yellow
+  { title: '₹50 Metro Recharge', prob: 8, type: 'reward', icon: '🚇', shortName: 'Metro', color: '#8b5cf6' }, // Purple
+  { title: 'Eco Cafe Discount', prob: 5, type: 'reward', icon: '☕', shortName: 'Cafe', color: '#14b8a6' }, // Teal
+  { title: 'Plant-a-Tree Certificate', prob: 5, type: 'reward', icon: '🌳', shortName: 'Tree', color: '#22c55e' }, // Green
+  { title: 'Green Champion Badge', prob: 2, type: 'reward', icon: '🏅', shortName: 'Badge', color: '#3b82f6' }, // Blue
 ];
 
 export default function Wallet() {
@@ -250,36 +250,7 @@ export default function Wallet() {
               transitionTimingFunction: 'cubic-bezier(0.17, 0.67, 0.12, 0.99)'
             }}
           >
-            {SPIN_PRIZES.map((prize, idx) => {
-              const sliceAngle = 360 / SPIN_PRIZES.length;
-              const rotation = idx * sliceAngle;
-              return (
-                <div 
-                  key={idx}
-                  className="absolute top-0 left-0 w-full h-full"
-                  style={{
-                    transform: `rotate(${rotation}deg)`,
-                    clipPath: `polygon(50% 50%, 50% 0, ${50 + 50 * Math.tan((sliceAngle / 2) * Math.PI / 180)}% 0)`
-                  }}
-                >
-                  {/* Wheel Slice Background */}
-                  <div 
-                    className="absolute w-full h-full"
-                    style={{
-                      backgroundColor: idx % 2 === 0 ? '#16a34a' : '#22c55e',
-                      clipPath: `polygon(50% 50%, 100% 0, 100% 50%)`, // Base slice before rotation mask
-                      transform: `rotate(-${90 - sliceAngle/2}deg)`,
-                      transformOrigin: '50% 50%'
-                    }}
-                  ></div>
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pt-8 text-white font-bold" style={{ transform: 'rotate(0deg)'}}>
-                     <span className="text-2xl drop-shadow-md">{prize.icon}</span>
-                  </div>
-                </div>
-              )
-            })}
-            
-            {/* Cleaner SVG Wheel approach for slices */}
+            {/* SVG Wheel approach for slices */}
             <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
               {SPIN_PRIZES.map((prize, idx) => {
                 const angle = 360 / SPIN_PRIZES.length;
@@ -288,20 +259,20 @@ export default function Wallet() {
                   <g key={idx} transform={`rotate(${rotateAngle} 50 50)`}>
                     <path
                       d="M 50 50 L 50 0 A 50 50 0 0 1 89.09 19.13 Z" // Approx 51.4 deg slice
-                      fill={idx % 2 === 0 ? '#16a34a' : '#22c55e'}
-                      stroke="#14532d"
+                      fill={prize.color}
+                      stroke="rgba(255,255,255,0.2)"
                       strokeWidth="0.5"
                     />
                     <text
                       x="70"
                       y="25"
                       transform="rotate(25 50 50)" // center text in slice
-                      fontSize="5"
+                      fontSize="3.5"
                       fill="white"
                       textAnchor="middle"
                       fontWeight="bold"
                     >
-                      {prize.icon}
+                      {prize.shortName}
                     </text>
                   </g>
                 );

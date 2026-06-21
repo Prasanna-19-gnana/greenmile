@@ -309,15 +309,30 @@ export function findRoute(
       
       let weight = getWeight(conn, weightType, !!isModeSwitch);
 
-      // Strict penalty for hopping off the train early for Chennai Central trips
-      const isCentralTrip = endName.toLowerCase().includes('central');
-      if (isCentralTrip && conn.to === endId) {
+      // Static Destination Rules
+      if (conn.to === endId) {
+        const staticRules = [
+          { dest: 'marina beach', prefer: ['government estate', 'lic', 'thousand lights', 'chepauk'], avoid: ['mambalam'] },
+          { dest: 'central', prefer: ['chennai park', 'chennai central'], avoid: ['mambalam', 'kodambakkam', 'saidapet', 'guindy'] },
+          { dest: 'airport', prefer: ['airport', 'tirusulam'], avoid: [] },
+          { dest: 'sipcot', prefer: ['sholinganallur', 'navalur', 'siruseri'], avoid: [] }
+        ];
+
+        const lowerEndName = endName.toLowerCase();
         const fromNode = stations[conn.from];
         if (fromNode) {
           const fromName = fromNode.name.toLowerCase();
-          if (fromName.includes('mambalam') || fromName.includes('kodambakkam') || 
-              fromName.includes('saidapet') || fromName.includes('guindy')) {
-            weight += 10000; // Massive penalty
+          for (const rule of staticRules) {
+            if (lowerEndName.includes(rule.dest)) {
+              if (rule.prefer.some(p => fromName.includes(p))) {
+                weight = Math.max(0, weight - 50); // Heavily favor this exit
+              } else {
+                weight += 1000; // Penalize non-preferred exits to force finding preferred ones
+              }
+              if (rule.avoid.some(a => fromName.includes(a))) {
+                weight += 10000; // Massive penalty for strictly avoided stations
+              }
+            }
           }
         }
       }
@@ -327,9 +342,23 @@ export function findRoute(
         weight += 20; // +20 min penalty for final transfer to dest
       }
 
+      // Overshoot Penalty (Prevent traveling significantly past the destination and returning)
+      const toStation = stations[conn.to];
+      if (toStation && toStation.lat && toStation.lng && conn.from !== startId && conn.to !== endId) {
+        const fromNode = stations[conn.from];
+        if (fromNode && fromNode.lat && fromNode.lng) {
+          const distToDestFromCurrent = getDistance(fromNode.lat, fromNode.lng, endLat, endLng);
+          const distToDestFromNext = getDistance(toStation.lat, toStation.lng, endLat, endLng);
+          
+          // If the next node takes us further away by more than 3.5km, apply overshoot penalty
+          if (distToDestFromNext > distToDestFromCurrent + 3.5) {
+            weight += 3000;
+          }
+        }
+      }
+
       // Regional Detour Penalty
       // If a node takes us significantly further North/West than start and end, penalize heavily
-      const toStation = stations[conn.to];
       if (toStation && toStation.lat && toStation.lng) {
         const minLat = Math.min(startLat, endLat) - 0.05;
         const maxLat = Math.max(startLat, endLat) + 0.05;

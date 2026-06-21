@@ -380,11 +380,11 @@ export function findRoute(
     groupedLegs.push(currentGroup);
   }
 
-  // Filter out zero-distance walks but preserve start/end names
+  // Filter out short distance walks but preserve start/end names
   const filteredLegs: RouteLeg[] = [];
   for (let i = 0; i < groupedLegs.length; i++) {
     const leg = groupedLegs[i];
-    if (leg.mode === 'walk' && leg.distance < 0.1) {
+    if (leg.mode === 'walk' && leg.distance <= 0.3) {
       if (i === 0 && groupedLegs.length > 1) {
         groupedLegs[i+1].from = leg.from;
       } else if (i === groupedLegs.length - 1 && filteredLegs.length > 0) {

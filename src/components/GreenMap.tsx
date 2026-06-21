@@ -18,26 +18,58 @@ L.Icon.Default.mergeOptions({
 const DEMO_COORDS: Record<string, [number, number]> = {
   'SRM Kattankulathur': [12.823, 80.044],
   'Guindy': [13.0108, 80.2206],
-  'Tambaram': [12.9249, 80.1100],
+  'Tambaram': [12.925, 80.127],
   'Chennai Central': [13.0827, 80.2707],
   'Velachery': [12.9754, 80.2206],
   'T Nagar': [13.0418, 80.2341],
   'Anna Nagar': [13.0827, 80.2116],
   'Marina Beach': [13.0500, 80.2824],
+  'Potheri': [12.823, 80.045],
+  'Potheri Railway Station': [12.823, 80.045],
+  'Sipcot': [12.83, 80.22],
+  'SIPCoT IT Park': [12.83, 80.22],
+  'Siruseri': [12.83, 80.22],
+  'Kelambakkam': [12.79, 80.22],
+  'Vandalur': [12.892, 80.081],
+  'Guduvanchery': [12.845, 80.06],
 };
+
+function isValidChennaiCoord(coord: [number, number] | null | undefined): boolean {
+  if (!coord) return false;
+  const [lat, lng] = coord;
+  return (
+    typeof lat === "number" &&
+    typeof lng === "number" &&
+    !isNaN(lat) &&
+    !isNaN(lng) &&
+    lat >= 12.3 &&
+    lat <= 13.5 &&
+    lng >= 79.7 &&
+    lng <= 80.5
+  );
+}
 
 function MapBounds({ route, source, destination }: { route?: MultiStageRoute, source: [number, number], destination: [number, number] }) {
   const map = useMap();
   useEffect(() => {
+    const validPoints: [number, number][] = [];
+    if (isValidChennaiCoord(source)) validPoints.push(source);
+    if (isValidChennaiCoord(destination)) validPoints.push(destination);
+
     if (route && route.legs.length > 0) {
-      const bounds = L.latLngBounds([source, destination]);
       route.legs.forEach(leg => {
-        bounds.extend([leg.fromLat, leg.fromLng]);
-        bounds.extend([leg.toLat, leg.toLng]);
+        if (isValidChennaiCoord([leg.fromLat, leg.fromLng])) validPoints.push([leg.fromLat, leg.fromLng]);
+        if (isValidChennaiCoord([leg.toLat, leg.toLng])) validPoints.push([leg.toLat, leg.toLng]);
+        if (leg.intermediateCoords) {
+          leg.intermediateCoords.forEach(coord => {
+            if (isValidChennaiCoord(coord)) validPoints.push(coord);
+          });
+        }
       });
-      map.fitBounds(bounds, { padding: [50, 50] });
-    } else {
-      const bounds = L.latLngBounds([source, destination]);
+    }
+
+    if (validPoints.length > 0) {
+      const bounds = L.latLngBounds(validPoints);
       map.fitBounds(bounds, { padding: [50, 50] });
     }
   }, [map, route, source, destination]);
@@ -55,15 +87,18 @@ const MODE_COLORS: Record<string, string> = {
 
 export default function GreenMap({ route, sourceName, destName }: { route?: MultiStageRoute, sourceName: string, destName: string }) {
   // Default to first demo route if not found (lat, lon)
-  const source = DEMO_COORDS[sourceName] || [12.823, 80.044]; 
-  const destination = DEMO_COORDS[destName] || [13.0108, 80.2206];
+  let source = DEMO_COORDS[sourceName] || null; 
+  let destination = DEMO_COORDS[destName] || null;
+  
+  if (!isValidChennaiCoord(source)) source = [13.0827, 80.2707]; // Chennai Central fallback
+  if (!isValidChennaiCoord(destination)) destination = [13.0827, 80.2707]; // Chennai Central fallback
 
   // If no route passed (loading state), draw straight line
   if (!route) {
     return (
       <div className="h-full w-full bg-gray-50 z-0">
         <MapContainer
-          center={source}
+          center={source!}
           zoom={11}
           scrollWheelZoom={true}
           className="h-full w-full"
@@ -73,10 +108,10 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          <Marker position={source}><Popup>Source: {sourceName}</Popup></Marker>
-          <Marker position={destination}><Popup>Destination: {destName}</Popup></Marker>
-          <Polyline positions={[source, destination]} color="#9ca3af" weight={4} dashArray="5, 10" />
-          <MapBounds source={source} destination={destination} />
+          <Marker position={source!}><Popup>Source: {sourceName}</Popup></Marker>
+          <Marker position={destination!}><Popup>Destination: {destName}</Popup></Marker>
+          <Polyline positions={[source!, destination!]} color="#9ca3af" weight={4} dashArray="5, 10" />
+          <MapBounds source={source!} destination={destination!} />
         </MapContainer>
       </div>
     );
@@ -84,17 +119,42 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
 
   // Draw complex graph route
   const stops = new Map<string, [number, number]>();
+  const allRouteCoords: [number, number][] = [];
+  const validPoints: [number, number][] = [];
+  const rejectedPoints: [number, number][] = [];
+
   route.legs.forEach(leg => {
-    if (leg.fromLat && leg.fromLng && leg.fromLat !== 0) stops.set(leg.fromName, [leg.fromLat, leg.fromLng]);
-    if (leg.toLat && leg.toLng && leg.toLat !== 0) stops.set(leg.toName, [leg.toLat, leg.toLng]);
+    const fromCoord: [number, number] = [leg.fromLat, leg.fromLng];
+    const toCoord: [number, number] = [leg.toLat, leg.toLng];
+    
+    allRouteCoords.push(fromCoord);
+    if (isValidChennaiCoord(fromCoord)) {
+      stops.set(leg.fromName, fromCoord);
+      validPoints.push(fromCoord);
+    } else {
+      rejectedPoints.push(fromCoord);
+    }
+
+    if (isValidChennaiCoord(toCoord)) {
+      stops.set(leg.toName, toCoord);
+      validPoints.push(toCoord);
+    } else {
+      rejectedPoints.push(toCoord);
+    }
+    allRouteCoords.push(toCoord);
   });
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log("Map points before filtering", allRouteCoords);
+    console.log("Valid map points", validPoints);
+    console.log("Rejected map points", rejectedPoints);
+  }
 
   return (
     <div className="h-full w-full z-0 relative">
       <div className="absolute top-4 right-4 z-[1000] bg-white/90 backdrop-blur rounded-xl p-3 shadow-lg border text-xs flex flex-col gap-2">
         <span className="font-bold border-b pb-1">Map Legend</span>
         {Object.entries(MODE_COLORS).map(([mode, color]) => {
-          // Only show modes used in this route
           if (!route.legs.some(l => l.mode === mode)) return null;
           return (
             <div key={mode} className="flex items-center gap-2">
@@ -105,7 +165,7 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
         })}
       </div>
       <MapContainer
-        center={source}
+        center={source!}
         zoom={11}
         scrollWheelZoom={true}
         className="h-full w-full"
@@ -118,8 +178,8 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
 
         {/* Draw all intermediate stops */}
         {Array.from(stops.entries()).map(([name, coords], idx) => {
-          const isSource = coords[0] === source[0] && coords[1] === source[1];
-          const isDest = coords[0] === destination[0] && coords[1] === destination[1];
+          const isSource = coords[0] === source![0] && coords[1] === source![1];
+          const isDest = coords[0] === destination![0] && coords[1] === destination![1];
           return (
             <Marker key={idx} position={coords} opacity={isSource || isDest ? 1 : 0.6}>
               <Popup>{name} {isSource ? '(Start)' : isDest ? '(End)' : '(Transit Stop)'}</Popup>
@@ -128,16 +188,16 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
         })}
 
         {/* Draw leg polylines */}
-        {route.legs.map((leg, idx) => {
+        {validPoints.length >= 2 ? route.legs.map((leg, idx) => {
           const positions: [number, number][] = [];
-          if (leg.fromLat && leg.fromLng && leg.fromLat !== 0) positions.push([leg.fromLat, leg.fromLng]);
+          if (isValidChennaiCoord([leg.fromLat, leg.fromLng])) positions.push([leg.fromLat, leg.fromLng]);
           
           if (leg.intermediateCoords && leg.intermediateCoords.length > 0) {
             leg.intermediateCoords.forEach(coord => {
-              if (coord && coord[0] && coord[0] !== 0) positions.push(coord);
+              if (isValidChennaiCoord(coord)) positions.push(coord);
             });
           }
-          if (leg.toLat && leg.toLng && leg.toLat !== 0) positions.push([leg.toLat, leg.toLng]);
+          if (isValidChennaiCoord([leg.toLat, leg.toLng])) positions.push([leg.toLat, leg.toLng]);
 
           if (positions.length < 2) return null; // Can't draw a line without 2 valid points
 
@@ -152,9 +212,12 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
           >
             <Popup>{leg.mode.toUpperCase()}: {leg.fromName} → {leg.toName} ({leg.distance.toFixed(1)} km)</Popup>
           </Polyline>
-        )})}
+          )
+        }) : (
+          <Polyline positions={[source!, destination!]} color="#9ca3af" weight={4} dashArray="5, 10" />
+        )}
         
-        <MapBounds route={route} source={source} destination={destination} />
+        <MapBounds route={route} source={source!} destination={destination!} />
       </MapContainer>
     </div>
   );

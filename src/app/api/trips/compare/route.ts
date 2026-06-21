@@ -93,6 +93,33 @@ export async function POST(request: NextRequest) {
     const endCoords = await getCoords(destination, GEOCODING['Tambaram Railway Station']);
 
     const directDistance = getDistance(startCoords[0], startCoords[1], endCoords[0], endCoords[1]);
+    
+    // 1. Valid Chennai Bounding Box
+    // Lat: 12.3 to 13.5, Lng: 79.7 to 80.5
+    const isWithinBounds = (lat: number, lng: number) => {
+      return lat >= 12.3 && lat <= 13.5 && lng >= 79.7 && lng <= 80.5;
+    };
+    
+    if (!isWithinBounds(startCoords[0], startCoords[1]) || !isWithinBounds(endCoords[0], endCoords[1])) {
+       return NextResponse.json({ 
+         error: 'No verified route found for this option.', 
+         debug: {
+           source, destination, normSource, normDest, startCoords, endCoords, distance: directDistance,
+           reason: 'Locations are outside the supported Chennai region bounds.'
+         }
+       }, { status: 400 });
+    }
+
+    // 2. Max distance sanity check
+    if (directDistance > 150) {
+       return NextResponse.json({ 
+         error: 'No verified route found for this option.',
+         debug: {
+           source, destination, normSource, normDest, startCoords, endCoords, distance: directDistance,
+           reason: 'Route exceeds maximum supported distance (150 km).'
+         }
+       }, { status: 400 });
+    }
 
     let allRoutes: RouteOption[] = [];
     const carRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'car');
@@ -107,7 +134,7 @@ export async function POST(request: NextRequest) {
     } else {
       const timeRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time');
       
-      const isTransitFailed = !timeRoute || (timeRoute.legs.length === 1 && timeRoute.legs[0].mode === 'car');
+      const isTransitFailed = !timeRoute || (timeRoute.legs.length === 1 && timeRoute.legs[0].mode === 'car') || timeRoute.totalDistance > directDistance * 3;
 
       if (isTransitFailed) {
         const cabRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'car');
@@ -148,6 +175,36 @@ export async function POST(request: NextRequest) {
     const uniqueRoutesMap = new Map<string, RouteOption>();
     
     for (const r of allRoutes) {
+      if (!r || !r.legs || r.legs.length === 0) continue;
+
+      // Validate route continuity
+      let isValid = true;
+      let totalGraphDistance = 0;
+
+      for (const leg of r.legs) {
+        const fromLat = typeof leg.from === 'string' ? 0 : leg.from.lat;
+        const fromLng = typeof leg.from === 'string' ? 0 : leg.from.lng;
+        const toLat = typeof leg.to === 'string' ? 0 : leg.to.lat;
+        const toLng = typeof leg.to === 'string' ? 0 : leg.to.lng;
+
+        // Skip missing coordinate validation for bus stops as they might be unmapped, 
+        // but reject if they are explicitly 0,0 which causes massive bounds
+        if ((fromLat === 0 && fromLng === 0) || (toLat === 0 && toLng === 0)) {
+           // isValid = false; // Currently skipping strict 0,0 check here since we nullified them in build_graph.
+        }
+
+        if (leg.distance === 0 && leg.from !== leg.to) {
+          isValid = false; // Invalid 0 distance edge
+        }
+        totalGraphDistance += leg.distance;
+      }
+
+      if (totalGraphDistance > directDistance * 4) {
+        isValid = false; // Massive detour (wormhole) detected
+      }
+
+      if (!isValid) continue;
+
       // Create a signature based on modes used
       const sig = r.legs.map(l => l.mode).join('-');
       if (!uniqueRoutesMap.has(sig) || r.label === 'Best Balanced Route') {
@@ -156,11 +213,29 @@ export async function POST(request: NextRequest) {
     }
     
     const uniqueRoutes = Array.from(uniqueRoutesMap.values());
+    
+    if (uniqueRoutes.length === 0) {
+      return NextResponse.json({ 
+         error: 'No verified route found for this option.',
+         debug: {
+           source, destination, normSource, normDest, startCoords, endCoords, distance: directDistance,
+           reason: 'Routes failed continuity and detour validation.'
+         }
+       }, { status: 400 });
+    }
 
     // Generate explanations concurrently
     const routePromises = uniqueRoutes.map(async (r) => {
       // Explain the route using Gemini
-      const explanation = await explainRoute(r);
+      let explanation = "";
+      try {
+        explanation = await explainRoute(r);
+        if (!explanation || explanation.trim() === "") {
+          explanation = `Take the recommended route shown above. This route saves ${Math.round(Math.max(0, carCo2 - r.totalCo2))} kg CO2 compared with car.`;
+        }
+      } catch (err) {
+        explanation = `Take the recommended route shown above. This route saves ${Math.round(Math.max(0, carCo2 - r.totalCo2))} kg CO2 compared with car.`;
+      }
       
       const co2Saved = Math.max(0, carCo2 - r.totalCo2);
       const costSaved = Math.max(0, carCost - r.totalCost);
@@ -216,6 +291,11 @@ export async function POST(request: NextRequest) {
       destination,
       distance: Math.round(carRoute.totalDistance * 10) / 10,
       modes,
+      debug: {
+        source, destination, normSource, normDest, startCoords, endCoords, distance: directDistance,
+        status: 'Valid',
+        reason: 'Passed all checks'
+      }
     });
   } catch (error: any) {
     console.error('API Error:', error);

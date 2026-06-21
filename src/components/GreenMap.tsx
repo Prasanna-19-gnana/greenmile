@@ -85,8 +85,8 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
   // Draw complex graph route
   const stops = new Map<string, [number, number]>();
   route.legs.forEach(leg => {
-    stops.set(leg.fromName, [leg.fromLat, leg.fromLng]);
-    stops.set(leg.toName, [leg.toLat, leg.toLng]);
+    if (leg.fromLat && leg.fromLng && leg.fromLat !== 0) stops.set(leg.fromName, [leg.fromLat, leg.fromLng]);
+    if (leg.toLat && leg.toLng && leg.toLat !== 0) stops.set(leg.toName, [leg.toLat, leg.toLng]);
   });
 
   return (
@@ -129,11 +129,17 @@ export default function GreenMap({ route, sourceName, destName }: { route?: Mult
 
         {/* Draw leg polylines */}
         {route.legs.map((leg, idx) => {
-          const positions: [number, number][] = [[leg.fromLat, leg.fromLng]];
+          const positions: [number, number][] = [];
+          if (leg.fromLat && leg.fromLng && leg.fromLat !== 0) positions.push([leg.fromLat, leg.fromLng]);
+          
           if (leg.intermediateCoords && leg.intermediateCoords.length > 0) {
-            positions.push(...leg.intermediateCoords);
+            leg.intermediateCoords.forEach(coord => {
+              if (coord && coord[0] && coord[0] !== 0) positions.push(coord);
+            });
           }
-          positions.push([leg.toLat, leg.toLng]);
+          if (leg.toLat && leg.toLng && leg.toLat !== 0) positions.push([leg.toLat, leg.toLng]);
+
+          if (positions.length < 2) return null; // Can't draw a line without 2 valid points
 
           return (
           <Polyline 

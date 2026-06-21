@@ -50,6 +50,7 @@ export interface RouteOption {
 
 // Haversine formula
 export function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -201,9 +202,9 @@ export function findRoute(
   startStations = startStations[0].dist < 1.5 ? startStations.slice(0, 1) : startStations.slice(0, 2);
 
   startStations.forEach(({ st, dist }) => {
-    // If <= 1km: Walk only
-    // If >1 and <=2: Walk AND Auto
-    // If >2: Auto only (up to some max distance, but we already filter by slice(0, 2))
+    // dist <= 1: walk only
+    // 1 < dist <= 2: walk + bike
+    // dist > 2: bike or car only
     
     if (dist <= 2) {
       virtAdjacency[startId].push({
@@ -290,7 +291,27 @@ export function findRoute(
       const prev = previous[current];
       const isModeSwitch = (!prev && conn.mode !== 'walk') || 
         (prev && (prev.mode !== conn.mode || prev.line !== conn.line) && conn.mode !== 'walk');
-      const weight = getWeight(conn, weightType, !!isModeSwitch);
+      
+      let weight = getWeight(conn, weightType, !!isModeSwitch);
+
+      // Regional Detour Penalty
+      // If a node takes us significantly further North/West than start and end, penalize heavily
+      const toStation = stations[conn.to];
+      if (toStation && toStation.lat && toStation.lng) {
+        const minLat = Math.min(startLat, endLat) - 0.05;
+        const maxLat = Math.max(startLat, endLat) + 0.05;
+        const minLng = Math.min(startLng, endLng) - 0.05;
+        const maxLng = Math.max(startLng, endLng) + 0.05;
+        
+        if (toStation.lat > maxLat + 0.1 || toStation.lat < minLat - 0.1 ||
+            toStation.lng > maxLng + 0.1 || toStation.lng < minLng - 0.1) {
+          weight += 1000; // heavy penalty for going completely out of regional bounds
+        }
+      } else if (toStation && !toStation.lat) {
+        // Unknown coordinate nodes (unmapped bus stops) get a slight penalty to discourage deep wormholes
+        weight += 2;
+      }
+
       const alt = distances[current] + weight;
       
       if (alt < distances[conn.to]) {

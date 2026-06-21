@@ -67,7 +67,12 @@ const coords = {
     "Perungudi": [12.9660, 80.2440],
     "Velachery": [12.9754, 80.2206],
     "Puzhuthivakkam": [12.9810, 80.2080],
-    "Adambakkam": [12.9870, 80.2030]
+    "Adambakkam": [12.9870, 80.2030],
+    "Sipcot": [12.8300, 80.2200],
+    "Sipcot It Park": [12.8300, 80.2200],
+    "Siruseri": [12.8300, 80.2200],
+    "Siruseri Sipcot": [12.8300, 80.2200],
+    "Kelambakkam": [12.7900, 80.2200]
 };
 
 const stations = {}; // name -> station object
@@ -79,8 +84,8 @@ function getOrCreateStation(name, type, line) {
     stations[norm] = {
       id: `st_${Object.keys(stations).length + 1}`,
       name: norm,
-      lat: coords[norm] ? coords[norm][0] : 0,
-      lng: coords[norm] ? coords[norm][1] : 0,
+      lat: coords[norm] ? coords[norm][0] : null,
+      lng: coords[norm] ? coords[norm][1] : null,
       type: type,
       lines: []
     };
@@ -93,7 +98,7 @@ function getOrCreateStation(name, type, line) {
     stations[norm].type = 'train';
   }
   // Infer coordinates for bus if missing but shares name with train
-  if (stations[norm].lat === 0 && coords[norm]) {
+  if (stations[norm].lat === null && coords[norm]) {
     stations[norm].lat = coords[norm][0];
     stations[norm].lng = coords[norm][1];
   }

@@ -65,6 +65,8 @@ function ResultsContent() {
   const [loading, setLoading] = useState(true);
   const [selecting, setSelecting] = useState<string | null>(null);
   const [expandedRoute, setExpandedRoute] = useState<string | null>(null);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [debugData, setDebugData] = useState<any>(null);
 
   useEffect(() => {
     if (!source || !destination) {
@@ -74,12 +76,22 @@ function ResultsContent() {
     
     const fetchRoutes = async () => {
       try {
+        setApiError(null);
         const res = await fetch('/api/trips/compare', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ source, destination, distance_km: distance }),
         });
         const data = await res.json();
+        
+        if (data.debug) {
+           setDebugData(data.debug);
+        }
+
+        if (!res.ok || data.error) {
+           setApiError(data.error || 'No verified route found for this option.');
+           return;
+        }
         
         if (data.modes && Array.isArray(data.modes)) {
             const mappedRoutes: MultiStageRoute[] = data.modes.map((m: any) => ({
@@ -106,8 +118,8 @@ function ResultsContent() {
             const recommended = mappedRoutes.find(r => r.isRecommended) || mappedRoutes[0];
             if (recommended) setExpandedRoute(recommended.id);
         }
-      } catch (e) {
-        console.error(e);
+      } catch (e: any) {
+        setApiError(e.message || 'No verified route found for this option.');
       } finally {
         setLoading(false);
       }
@@ -181,6 +193,32 @@ function ResultsContent() {
         </p>
       </motion.div>
 
+      {/* Debug Panel (Dev Mode Only) */}
+      {process.env.NODE_ENV === 'development' && debugData && (
+        <div className="mb-8 p-4 bg-gray-900 text-green-400 font-mono text-xs rounded-xl overflow-auto shadow-inner">
+          <h3 className="text-white font-bold mb-2 uppercase tracking-widest border-b border-gray-700 pb-2">Dev Debug Panel</h3>
+          <p><strong>Status:</strong> {debugData.status || 'Validation Failed'}</p>
+          <p><strong>Reason:</strong> {debugData.reason}</p>
+          <p><strong>Norm Source:</strong> {debugData.normSource}</p>
+          <p><strong>Norm Dest:</strong> {debugData.normDest}</p>
+          <p><strong>Start Coords:</strong> [{debugData.startCoords?.join(', ')}]</p>
+          <p><strong>End Coords:</strong> [{debugData.endCoords?.join(', ')}]</p>
+          <p><strong>Calculated Direct Distance:</strong> {debugData.distance?.toFixed(2)} km</p>
+        </div>
+      )}
+
+      {apiError ? (
+        <div className="flex flex-col items-center justify-center py-20 bg-red-50/50 dark:bg-red-900/10 rounded-3xl border border-red-100 dark:border-red-900/30">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/50 text-red-500 rounded-full flex items-center justify-center mb-4">
+            <span className="text-2xl font-bold">!</span>
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">Validation Error</h2>
+          <p className="text-red-600 dark:text-red-400">{apiError}</p>
+          <button onClick={() => router.back()} className="mt-6 px-6 py-2 bg-gray-200 dark:bg-gray-800 rounded-full hover:bg-gray-300 dark:hover:bg-gray-700 transition-colors">
+            Go Back
+          </button>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <div className="lg:col-span-3 space-y-6">
           <motion.div initial="hidden" animate="show" className="space-y-4">
@@ -356,6 +394,7 @@ function ResultsContent() {
           </motion.div>
         </div>
       </div>
+      )}
     </div>
   );
 }

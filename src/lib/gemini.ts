@@ -8,7 +8,7 @@ const ai = new GoogleGenAI({});
 export async function explainRoute(route: RouteOption): Promise<string> {
   // If no API key is set, fallback gracefully
   if (!process.env.GEMINI_API_KEY) {
-    return 'Gemini API key is not configured. Natural language explanation is unavailable.';
+    throw new Error('Gemini API key is not configured.');
   }
 
   try {
@@ -38,9 +38,9 @@ Please provide a short, single-paragraph summary of this journey.
       }
     });
 
-    return response.text || 'Unable to generate explanation.';
+    return response.text || '';
   } catch (error) {
     console.error('Error generating Gemini explanation:', error);
-    return 'An error occurred while generating the route explanation.';
+    throw error;
   }
 }

@@ -11,12 +11,29 @@ const REWARD_TIERS = [
   { id: 5, title: 'Premium Sustainable Commuter Badge', points_required: 10000, description: 'Highest honor for green commuters.' }
 ];
 
+const SPIN_COST = 50;
+
+const SPIN_PRIZES = [
+  { title: 'No Reward', prob: 45, type: 'none', icon: '😢' },
+  { title: '+20 Bonus Points', prob: 20, type: 'points', value: 20, icon: '⭐' },
+  { title: '+50 Bonus Points', prob: 15, type: 'points', value: 50, icon: '🌟' },
+  { title: '₹50 Metro Recharge', prob: 8, type: 'reward', icon: '🚇' },
+  { title: 'Eco Cafe Discount', prob: 5, type: 'reward', icon: '☕' },
+  { title: 'Plant-a-Tree Certificate', prob: 5, type: 'reward', icon: '🌳' },
+  { title: 'Green Champion Badge', prob: 2, type: 'reward', icon: '🏅' },
+];
+
 export default function Wallet() {
   const [balance, setBalance] = useState(0);
   const [lifetimePoints, setLifetimePoints] = useState(0);
   const [claimedRewards, setClaimedRewards] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  
+  // Spin State
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [spinRotation, setSpinRotation] = useState(0);
+  const [spinHistory, setSpinHistory] = useState<any[]>([]);
 
   const fetchWalletData = () => {
     try {
@@ -25,9 +42,13 @@ export default function Wallet() {
       const claimedJson = localStorage.getItem('greenmile_rewards_claimed');
       const claimed = claimedJson ? JSON.parse(claimedJson) : [];
       
+      const historyJson = localStorage.getItem('greenmile_luck_spin_history');
+      const spinHist = historyJson ? JSON.parse(historyJson) : [];
+
       setBalance(currentBalance);
       setLifetimePoints(totalLifetime);
       setClaimedRewards(claimed);
+      setSpinHistory(spinHist);
     } catch (error) {
       console.error('Error fetching wallet:', error);
     } finally {
@@ -38,6 +59,11 @@ export default function Wallet() {
   useEffect(() => {
     fetchWalletData();
   }, []);
+
+  const showToast = (msg: string) => {
+    setMessage(msg);
+    setTimeout(() => setMessage(''), 4000);
+  };
 
   const handleRedeem = (rewardId: number) => {
     const reward = REWARD_TIERS.find(r => r.id === rewardId);
@@ -50,13 +76,82 @@ export default function Wallet() {
       localStorage.setItem('greenmile_wallet_points', newBalance.toString());
       localStorage.setItem('greenmile_rewards_claimed', JSON.stringify(newClaimed));
       
-      setMessage(`Success: You unlocked ${reward.title}!`);
+      showToast(`Success: You unlocked ${reward.title}!`);
       fetchWalletData();
     } else {
-      setMessage(`Error: You need ${reward.points_required - balance} more points to unlock this reward.`);
+      showToast(`Error: You need ${reward.points_required - balance} more points to unlock this reward.`);
     }
+  };
+
+  const handleSpin = () => {
+    if (balance < SPIN_COST || isSpinning) return;
+
+    // Deduct 50 points immediately
+    const newBalance = balance - SPIN_COST;
+    setBalance(newBalance);
+    localStorage.setItem('greenmile_wallet_points', newBalance.toString());
     
-    setTimeout(() => setMessage(''), 3000);
+    const pointsSpent = parseInt(localStorage.getItem('greenmile_points_spent') || '0', 10);
+    localStorage.setItem('greenmile_points_spent', (pointsSpent + SPIN_COST).toString());
+
+    setIsSpinning(true);
+    setMessage('');
+
+    // Determine Result
+    const rand = Math.random() * 100;
+    let cumulativeProb = 0;
+    let selectedPrize = SPIN_PRIZES[0];
+    let prizeIndex = 0;
+
+    for (let i = 0; i < SPIN_PRIZES.length; i++) {
+      cumulativeProb += SPIN_PRIZES[i].prob;
+      if (rand <= cumulativeProb) {
+        selectedPrize = SPIN_PRIZES[i];
+        prizeIndex = i;
+        break;
+      }
+    }
+
+    // Animate Wheel
+    // 5 full rotations (1800deg) + the offset for the selected prize slice
+    const sliceAngle = 360 / SPIN_PRIZES.length;
+    // We want the selected slice to land at the top (0 or 360 deg)
+    // The prize's center is at: prizeIndex * sliceAngle + (sliceAngle / 2)
+    // To put it at the top (which we'll define as 0deg or top of the wheel), we rotate backwards by its center
+    const targetOffset = 360 - (prizeIndex * sliceAngle + (sliceAngle / 2));
+    const newRotation = spinRotation + 1800 + targetOffset - (spinRotation % 360);
+
+    setSpinRotation(newRotation);
+
+    setTimeout(() => {
+      setIsSpinning(false);
+      
+      // Process Result
+      if (selectedPrize.type === 'points' && selectedPrize.value) {
+        const afterWinBalance = newBalance + selectedPrize.value;
+        localStorage.setItem('greenmile_wallet_points', afterWinBalance.toString());
+        showToast(`Congratulations! You won ${selectedPrize.title}.`);
+      } else if (selectedPrize.type === 'reward') {
+        const currentWonJson = localStorage.getItem('greenmile_rewards_won');
+        const currentWon = currentWonJson ? JSON.parse(currentWonJson) : [];
+        currentWon.push(selectedPrize.title);
+        localStorage.setItem('greenmile_rewards_won', JSON.stringify(currentWon));
+        showToast(`Congratulations! You won ${selectedPrize.title}.`);
+      } else {
+        showToast('Better luck next time!');
+      }
+
+      // Add to history
+      const historyItem = {
+        title: selectedPrize.title,
+        icon: selectedPrize.icon,
+        timestamp: new Date().toISOString()
+      };
+      const newHistory = [historyItem, ...spinHistory].slice(0, 10); // Keep last 10
+      localStorage.setItem('greenmile_luck_spin_history', JSON.stringify(newHistory));
+      
+      fetchWalletData();
+    }, 3000); // 3 second animation
   };
 
   if (loading) {
@@ -74,19 +169,18 @@ export default function Wallet() {
     return '🏅';
   };
 
-  // Calculate Progress
   const nextReward = REWARD_TIERS.find(r => !claimedRewards.includes(r.id) && balance < r.points_required);
   const progressPercentage = nextReward ? Math.min((balance / nextReward.points_required) * 100, 100) : 100;
 
   return (
     <div className="page-transition max-w-6xl mx-auto py-8 px-4">
       {message && (
-        <div className={`fixed top-4 right-4 p-4 rounded-xl shadow-lg z-50 text-white ${message.startsWith('Success') ? 'bg-green-600' : 'bg-red-500'}`}>
+        <div className={`fixed top-4 right-4 p-4 rounded-xl shadow-lg z-50 text-white transition-all ${message.includes('Better luck') || message.includes('Error') ? 'bg-red-500' : 'bg-green-600'}`}>
           {message}
         </div>
       )}
       
-      <div className="text-center mb-12">
+      <div className="text-center mb-10">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Green Wallet</h1>
         
         <div className="flex flex-col sm:flex-row justify-center gap-6 mt-6">
@@ -119,8 +213,133 @@ export default function Wallet() {
         )}
       </div>
 
+      {/* Luck Spin Section */}
+      <div className="max-w-4xl mx-auto bg-white border border-gray-100 rounded-3xl shadow-sm p-6 sm:p-10 mb-12 flex flex-col md:flex-row gap-10 items-center justify-between">
+        <div className="flex-1 text-center md:text-left">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2 flex items-center justify-center md:justify-start gap-2">
+            🎰 Green Luck Spin
+          </h2>
+          <p className="text-gray-600 mb-6">Try your luck! Spin the wheel to win instant bonus points or exclusive eco-rewards.</p>
+          <div className="inline-block bg-yellow-50 text-yellow-800 font-bold px-4 py-2 rounded-xl mb-6">
+            Cost: {SPIN_COST} Points
+          </div>
+          <br/>
+          <button
+            onClick={handleSpin}
+            disabled={balance < SPIN_COST || isSpinning}
+            className={`w-full md:w-auto font-bold py-4 px-10 rounded-2xl shadow-lg transition-all ${
+              balance < SPIN_COST 
+                ? 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none' 
+                : isSpinning
+                  ? 'bg-green-400 text-white cursor-wait'
+                  : 'bg-green-600 hover:bg-green-500 text-white hover:scale-105 hover:shadow-green-500/30'
+            }`}
+          >
+            {isSpinning ? 'Spinning...' : 'SPIN NOW'}
+          </button>
+        </div>
+
+        {/* Spin Wheel Visual */}
+        <div className="relative w-64 h-64 sm:w-80 sm:h-80 flex-shrink-0">
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 w-8 h-8 z-10 text-red-500 text-3xl">▼</div>
+          <div 
+            className="w-full h-full rounded-full border-4 border-green-600 shadow-xl overflow-hidden relative transition-transform"
+            style={{ 
+              transform: `rotate(${spinRotation}deg)`, 
+              transitionDuration: isSpinning ? '3s' : '0s',
+              transitionTimingFunction: 'cubic-bezier(0.17, 0.67, 0.12, 0.99)'
+            }}
+          >
+            {SPIN_PRIZES.map((prize, idx) => {
+              const sliceAngle = 360 / SPIN_PRIZES.length;
+              const rotation = idx * sliceAngle;
+              return (
+                <div 
+                  key={idx}
+                  className="absolute top-0 left-0 w-full h-full"
+                  style={{
+                    transform: `rotate(${rotation}deg)`,
+                    clipPath: `polygon(50% 50%, 50% 0, ${50 + 50 * Math.tan((sliceAngle / 2) * Math.PI / 180)}% 0)`
+                  }}
+                >
+                  {/* Wheel Slice Background */}
+                  <div 
+                    className="absolute w-full h-full"
+                    style={{
+                      backgroundColor: idx % 2 === 0 ? '#16a34a' : '#22c55e',
+                      clipPath: `polygon(50% 50%, 100% 0, 100% 50%)`, // Base slice before rotation mask
+                      transform: `rotate(-${90 - sliceAngle/2}deg)`,
+                      transformOrigin: '50% 50%'
+                    }}
+                  ></div>
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center pt-8 text-white font-bold" style={{ transform: 'rotate(0deg)'}}>
+                     <span className="text-2xl drop-shadow-md">{prize.icon}</span>
+                  </div>
+                </div>
+              )
+            })}
+            
+            {/* Cleaner SVG Wheel approach for slices */}
+            <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+              {SPIN_PRIZES.map((prize, idx) => {
+                const angle = 360 / SPIN_PRIZES.length;
+                const rotateAngle = idx * angle;
+                return (
+                  <g key={idx} transform={`rotate(${rotateAngle} 50 50)`}>
+                    <path
+                      d="M 50 50 L 50 0 A 50 50 0 0 1 89.09 19.13 Z" // Approx 51.4 deg slice
+                      fill={idx % 2 === 0 ? '#16a34a' : '#22c55e'}
+                      stroke="#14532d"
+                      strokeWidth="0.5"
+                    />
+                    <text
+                      x="70"
+                      y="25"
+                      transform="rotate(25 50 50)" // center text in slice
+                      fontSize="5"
+                      fill="white"
+                      textAnchor="middle"
+                      fontWeight="bold"
+                    >
+                      {prize.icon}
+                    </text>
+                  </g>
+                );
+              })}
+              <circle cx="50" cy="50" r="15" fill="white" stroke="#16a34a" strokeWidth="2" />
+              <text x="50" y="52" fontSize="6" fontWeight="bold" fill="#16a34a" textAnchor="middle">SPIN</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-4xl mx-auto mb-16">
+        <h3 className="text-xl font-bold text-gray-900 mb-4">Recent Spin History</h3>
+        {spinHistory.length > 0 ? (
+          <div className="bg-white rounded-2xl shadow-sm border overflow-hidden">
+            <ul className="divide-y divide-gray-100">
+              {spinHistory.map((item, idx) => (
+                <li key={idx} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{item.icon}</span>
+                    <span className="font-semibold text-gray-800">{item.title}</span>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {new Date(item.timestamp).toLocaleString()}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div className="bg-gray-50 rounded-2xl border p-8 text-center text-gray-500">
+            No spins yet. Try your luck above!
+          </div>
+        )}
+      </div>
+
       <div className="mb-6 flex justify-between items-end">
-        <h2 className="text-2xl font-bold text-gray-900">Reward Catalog</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Milestone Rewards Catalog</h2>
         <div className="text-sm text-gray-500">
           Unlocked: {claimedRewards.length} / {REWARD_TIERS.length}
         </div>

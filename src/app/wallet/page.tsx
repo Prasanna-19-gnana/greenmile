@@ -263,17 +263,6 @@ export default function Wallet() {
                       stroke="rgba(255,255,255,0.2)"
                       strokeWidth="0.5"
                     />
-                    <text
-                      x="70"
-                      y="25"
-                      transform="rotate(25 50 50)" // center text in slice
-                      fontSize="3.5"
-                      fill="white"
-                      textAnchor="middle"
-                      fontWeight="bold"
-                    >
-                      {prize.shortName}
-                    </text>
                   </g>
                 );
               })}

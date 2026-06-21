@@ -165,7 +165,7 @@ export function findRoute(
   if (directMode) {
     const d = getDistance(startLat, startLng, endLat, endLng);
     const speed = directMode === 'car' ? 30 : directMode === 'bike' ? 20 : 5;
-    const co2F = directMode === 'car' ? 120 : directMode === 'bike' ? 70 : 0;
+    const co2F = directMode === 'car' ? 120 : directMode === 'bike' ? 100 : 0;
     const costP = directMode === 'car' ? 12 : directMode === 'bike' ? 5 : 0;
 
     return {
@@ -201,28 +201,31 @@ export function findRoute(
   startStations = startStations[0].dist < 1.5 ? startStations.slice(0, 1) : startStations.slice(0, 2);
 
   startStations.forEach(({ st, dist }) => {
-    let mode: 'walk' | 'bike' | 'car' = 'walk';
-    let speed = WALKING_SPEED;
-    let cost = 0;
-    let co2 = 0;
+    // If <= 1km: Walk only
+    // If >1 and <=2: Walk AND Auto
+    // If >2: Auto only (up to some max distance, but we already filter by slice(0, 2))
     
-    if (dist > 2 && dist <= 5) {
-      mode = 'bike'; // Auto
-      speed = 20;
-      cost = dist * 5;
-      co2 = 70;
-    } else if (dist > 5) {
-      mode = 'car'; // Cab
-      speed = 30;
-      cost = dist * 18;
-      co2 = 120;
+    if (dist <= 2) {
+      virtAdjacency[startId].push({
+        from: startId, to: st.id, mode: 'walk',
+        distance_km: dist, duration_min: (dist / WALKING_SPEED) * 60,
+        cost: 0, frequency_min: 0, co2_factor: 0
+      });
     }
 
-    virtAdjacency[startId].push({
-      from: startId, to: st.id, mode,
-      distance_km: dist, duration_min: (dist / speed) * 60,
-      cost, frequency_min: 0, co2_factor: co2
-    });
+    if (dist > 1 && dist <= 5) {
+      virtAdjacency[startId].push({
+        from: startId, to: st.id, mode: 'bike',
+        distance_km: dist, duration_min: (dist / 20) * 60,
+        cost: dist * 15, frequency_min: 0, co2_factor: 100
+      });
+    } else if (dist > 5) {
+      virtAdjacency[startId].push({
+        from: startId, to: st.id, mode: 'car',
+        distance_km: dist, duration_min: (dist / 30) * 60,
+        cost: dist * 18, frequency_min: 0, co2_factor: 120
+      });
+    }
   });
 
   let endStations = Object.values(stations).map(st => ({
@@ -232,29 +235,30 @@ export function findRoute(
   endStations = endStations[0].dist < 1.5 ? endStations.slice(0, 1) : endStations.slice(0, 2);
 
   endStations.forEach(({ st, dist }) => {
-    let mode: 'walk' | 'bike' | 'car' = 'walk';
-    let speed = WALKING_SPEED;
-    let cost = 0;
-    let co2 = 0;
-    
-    if (dist > 2 && dist <= 5) {
-      mode = 'bike'; // Auto
-      speed = 20;
-      cost = dist * 5;
-      co2 = 70;
-    } else if (dist > 5) {
-      mode = 'car'; // Cab
-      speed = 30;
-      cost = dist * 18;
-      co2 = 120;
+    if (dist <= 2) {
+      if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
+      virtAdjacency[st.id].push({
+        from: st.id, to: endId, mode: 'walk',
+        distance_km: dist, duration_min: (dist / WALKING_SPEED) * 60,
+        cost: 0, frequency_min: 0, co2_factor: 0
+      });
     }
 
-    if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
-    virtAdjacency[st.id] = [...virtAdjacency[st.id], {
-      from: st.id, to: endId, mode,
-      distance_km: dist, duration_min: (dist / speed) * 60,
-      cost, frequency_min: 0, co2_factor: co2
-    }];
+    if (dist > 1 && dist <= 5) {
+      if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
+      virtAdjacency[st.id].push({
+        from: st.id, to: endId, mode: 'bike',
+        distance_km: dist, duration_min: (dist / 20) * 60,
+        cost: dist * 15, frequency_min: 0, co2_factor: 100
+      });
+    } else if (dist > 5) {
+      if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
+      virtAdjacency[st.id].push({
+        from: st.id, to: endId, mode: 'car',
+        distance_km: dist, duration_min: (dist / 30) * 60,
+        cost: dist * 18, frequency_min: 0, co2_factor: 120
+      });
+    }
   });
 
   // Dijkstra
@@ -283,7 +287,9 @@ export function findRoute(
 
     const neighbors = virtAdjacency[current] || [];
     for (const conn of neighbors) {
-      const isModeSwitch = (!previous[current] && conn.mode !== 'walk') || (previous[current] && previous[current]!.mode !== conn.mode && conn.mode !== 'walk');
+      const prev = previous[current];
+      const isModeSwitch = (!prev && conn.mode !== 'walk') || 
+        (prev && (prev.mode !== conn.mode || prev.line !== conn.line) && conn.mode !== 'walk');
       const weight = getWeight(conn, weightType, !!isModeSwitch);
       const alt = distances[current] + weight;
       

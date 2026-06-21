@@ -1,0 +1,88 @@
+route,station_order,station_name,minutes_from_previous,cumulative_minutes
+Beach-Tambaram,1,Chennai Beach,0,0
+Beach-Tambaram,2,Chennai Fort,3,3
+Beach-Tambaram,3,Chennai Park,3,6
+Beach-Tambaram,4,Egmore,3,9
+Beach-Tambaram,5,Chetpet,3,12
+Beach-Tambaram,6,Nungambakkam,3,15
+Beach-Tambaram,7,Kodambakkam,3,18
+Beach-Tambaram,8,Mambalam,3,21
+Beach-Tambaram,9,Saidapet,3,24
+Beach-Tambaram,10,Guindy,3,27
+Beach-Tambaram,11,St Thomas Mount,3,30
+Beach-Tambaram,12,Pazhavanthangal,3,33
+Beach-Tambaram,13,Meenambakkam,3,36
+Beach-Tambaram,14,Tirusulam,3,39
+Beach-Tambaram,15,Pallavaram,3,42
+Beach-Tambaram,16,Chromepet,3,45
+Beach-Tambaram,17,Tambaram Sanatorium,3,48
+Beach-Tambaram,18,Tambaram,3,51
+Beach-Chengalpattu,1,Chennai Beach,0,0
+Beach-Chengalpattu,2,Chennai Fort,3,3
+Beach-Chengalpattu,3,Chennai Park,3,6
+Beach-Chengalpattu,4,Egmore,3,9
+Beach-Chengalpattu,5,Chetpet,3,12
+Beach-Chengalpattu,6,Nungambakkam,3,15
+Beach-Chengalpattu,7,Kodambakkam,3,18
+Beach-Chengalpattu,8,Mambalam,3,21
+Beach-Chengalpattu,9,Saidapet,3,24
+Beach-Chengalpattu,10,Guindy,3,27
+Beach-Chengalpattu,11,St Thomas Mount,3,30
+Beach-Chengalpattu,12,Pallavaram,3,33
+Beach-Chengalpattu,13,Chromepet,3,36
+Beach-Chengalpattu,14,Tambaram,3,39
+Beach-Chengalpattu,15,Perungalathur,3,42
+Beach-Chengalpattu,16,Vandalur,3,45
+Beach-Chengalpattu,17,Urapakkam,3,48
+Beach-Chengalpattu,18,Guduvancheri,3,51
+Beach-Chengalpattu,19,Potheri,3,54
+Beach-Chengalpattu,20,Kattankulathur,3,57
+Beach-Chengalpattu,21,Maraimalai Nagar,3,60
+Beach-Chengalpattu,22,Singaperumal Koil,3,63
+Beach-Chengalpattu,23,Paranur,3,66
+Beach-Chengalpattu,24,Chengalpattu,3,69
+Central-Arakkonam,1,Chennai Central,0,0
+Central-Arakkonam,2,Basin Bridge,3,3
+Central-Arakkonam,3,Vyasarpadi Jeeva,3,6
+Central-Arakkonam,4,Perambur,3,9
+Central-Arakkonam,5,Perambur Carriage Works,3,12
+Central-Arakkonam,6,Perambur Loco Works,3,15
+Central-Arakkonam,7,Villivakkam,3,18
+Central-Arakkonam,8,Korattur,3,21
+Central-Arakkonam,9,Pattaravakkam,3,24
+Central-Arakkonam,10,Ambattur,3,27
+Central-Arakkonam,11,Tirumullaivoyal,3,30
+Central-Arakkonam,12,Annanur,3,33
+Central-Arakkonam,13,Avadi,3,36
+Central-Arakkonam,14,Hindu College,3,39
+Central-Arakkonam,15,Pattabiram,3,42
+Central-Arakkonam,16,Nemilichery,3,45
+Central-Arakkonam,17,Tiruninravur,3,48
+Central-Arakkonam,18,Veppampattu,3,51
+Central-Arakkonam,19,Sevvapet Road,3,54
+Central-Arakkonam,20,Putlur,3,57
+Central-Arakkonam,21,Tiruvallur,3,60
+Central-Arakkonam,22,Kadambathur,3,63
+Central-Arakkonam,23,Manavur,3,66
+Central-Arakkonam,24,Tiruvalangadu,3,69
+Central-Arakkonam,25,Mosur,3,72
+Central-Arakkonam,26,Puliyamangalam,3,75
+Central-Arakkonam,27,Arakkonam,3,78
+Beach-Velachery,1,Chennai Beach,0,0
+Beach-Velachery,2,Chennai Fort,3,3
+Beach-Velachery,3,Park Town,3,6
+Beach-Velachery,4,Chintadripet,3,9
+Beach-Velachery,5,Chepauk,3,12
+Beach-Velachery,6,Thiruvallikeni,3,15
+Beach-Velachery,7,Light House,3,18
+Beach-Velachery,8,Mundakakanni Amman Koil,3,21
+Beach-Velachery,9,Thirumayilai,3,24
+Beach-Velachery,10,Mandaveli,3,27
+Beach-Velachery,11,Greenways Road,3,30
+Beach-Velachery,12,Kotturpuram,3,33
+Beach-Velachery,13,Kasturba Nagar,3,36
+Beach-Velachery,14,Indira Nagar,3,39
+Beach-Velachery,15,Thiruvanmiyur,3,42
+Beach-Velachery,16,Taramani,3,45
+Beach-Velachery,17,Perungudi,3,48
+Beach-Velachery,18,Velachery,3,51

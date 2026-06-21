@@ -14,15 +14,49 @@ export default function Dashboard() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [dashRes, nudgeRes] = await Promise.all([
-          fetch('/api/dashboard/1'),
-          fetch('/api/nudge/1')
-        ]);
-        const dashData = await dashRes.json();
+        // Fetch nudge data from API as it might be dynamic/AI driven
+        const nudgeRes = await fetch('/api/nudge/1');
         const nudgeData = await nudgeRes.json();
-        
-        setData(dashData);
         setNudge(nudgeData);
+
+        // Read all stats from localStorage
+        const totalPoints = parseInt(localStorage.getItem('greenmile_wallet_points') || '0', 10);
+        const totalCo2Saved = parseFloat(localStorage.getItem('greenmile_total_co2_saved') || '0');
+        const historyJson = localStorage.getItem('greenmile_trip_history');
+        const recentTrips = historyJson ? JSON.parse(historyJson) : [];
+        
+        // Calculate best mode (most frequent)
+        const modeCounts = recentTrips.reduce((acc: any, trip: any) => {
+          acc[trip.selectedMode] = (acc[trip.selectedMode] || 0) + 1;
+          return acc;
+        }, {});
+        
+        let bestModeStr = 'N/A';
+        if (Object.keys(modeCounts).length > 0) {
+          bestModeStr = Object.keys(modeCounts).reduce((a, b) => modeCounts[a] > modeCounts[b] ? a : b);
+        }
+
+        // Determine streak based on recent trips timestamps
+        let streak = 0;
+        if (recentTrips.length > 0) {
+          const today = new Date().toDateString();
+          const latestTripDate = new Date(recentTrips[0].timestamp).toDateString();
+          if (latestTripDate === today || latestTripDate === new Date(Date.now() - 86400000).toDateString()) {
+            streak = 1; // Basic streak logic for MVP
+          }
+        }
+
+        setData({
+          userInfo: { name: 'Commuter' },
+          user: {
+            totalPoints,
+            totalCo2Saved,
+            streak,
+          },
+          recentTrips: recentTrips.slice(0, 5), // Only show last 5
+          bestMode: { label: bestModeStr }
+        });
+
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
       } finally {
@@ -105,10 +139,10 @@ export default function Dashboard() {
                         <td className="py-4 font-medium">{trip.source} <span className="text-muted-foreground mx-1">→</span> {trip.destination}</td>
                         <td className="py-4 capitalize">
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-secondary-foreground">
-                            {trip.selectedMode}
+                            {trip.selectedMode.replace('route_', '')}
                           </span>
                         </td>
-                        <td className="py-4 text-green-500 font-medium text-right">+{trip.co2Saved.toFixed(1)} kg</td>
+                        <td className="py-4 text-green-500 font-medium text-right">+{trip.co2Saved?.toFixed(1) || 0} kg</td>
                         <td className="py-4 text-yellow-500 font-medium text-right">+{trip.pointsEarned}</td>
                       </tr>
                     ))

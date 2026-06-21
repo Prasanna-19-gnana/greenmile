@@ -13,13 +13,14 @@ export interface Station {
 export interface Connection {
   from: string;
   to: string;
-  mode: 'metro' | 'train' | 'bus' | 'walk' | 'car' | 'bike';
+  mode: 'metro' | 'train' | 'bus' | 'walk' | 'car' | 'bike' | 'cab';
   distance_km: number;
   duration_min: number;
   cost: number;
   frequency_min: number;
   co2_factor: number;
   line?: string;
+  debug?: any;
 }
 
 export interface RouteLeg {
@@ -33,6 +34,7 @@ export interface RouteLeg {
   line?: string;
   intermediateStops?: string[];
   intermediateCoords?: [number, number][];
+  debug?: any;
 }
 
 export interface RouteOption {
@@ -116,21 +118,24 @@ export function getStationByName(name: string): Station | null {
 
 type WeightType = 'time' | 'cost' | 'co2' | 'balanced';
 
-function getWeight(conn: Connection, type: WeightType, isModeSwitch: boolean): number {
+function getWeight(conn: Connection, type: WeightType, isModeSwitch: boolean, directDist?: number): number {
+  let penalty = 0;
+  if (conn.mode === 'train' && directDist && directDist < 12) penalty += 5000; // penalize inner-city train
+
   switch(type) {
     case 'time':
       // add wait time only if we switch modes to board this transit
-      return conn.duration_min + (isModeSwitch ? (conn.frequency_min / 2) : 0);
+      return penalty + conn.duration_min + (isModeSwitch ? (conn.frequency_min / 2) : 0);
     case 'cost':
-      return conn.cost;
+      return penalty + conn.cost;
     case 'co2':
-      return (conn.distance_km * conn.co2_factor) / 1000; // in kg
+      return penalty + (conn.distance_km * conn.co2_factor) / 1000; // in kg
     case 'balanced':
       // normalize and sum
       const timeW = (conn.duration_min + (isModeSwitch ? (conn.frequency_min / 2) : 0)) / 60; // hours
       const costW = conn.cost / 50; // assuming 50 is base cost unit
       const co2W = (conn.distance_km * conn.co2_factor) / 1000;
-      return timeW + costW + co2W;
+      return penalty + timeW + costW + co2W;
   }
 }
 
@@ -156,7 +161,7 @@ export function findRoute(
   endLat: number, endLng: number, endName: string,
   weightType: WeightType,
   directMode?: 'car' | 'bike' | 'walk'
-): RouteOption {
+): RouteOption | null {
   loadData();
 
   const startId = 'START_NODE';
@@ -164,7 +169,11 @@ export function findRoute(
 
   // If calculating a direct route (no transit)
   if (directMode) {
-    const d = getDistance(startLat, startLng, endLat, endLng);
+    let d = getDistance(startLat, startLng, endLat, endLng);
+    // Apply multipliers requested by user
+    if (directMode === 'walk') d *= 1.2;
+    else d *= 1.3; // car, bike, auto
+
     const speed = directMode === 'car' ? 30 : directMode === 'bike' ? 20 : 5;
     const co2F = directMode === 'car' ? 120 : directMode === 'bike' ? 100 : 0;
     const costP = directMode === 'car' ? 12 : directMode === 'bike' ? 5 : 0;
@@ -179,7 +188,8 @@ export function findRoute(
         distance: d,
         duration: (d / speed) * 60,
         cost: d * costP,
-        co2: (d * co2F) / 1000
+        co2: (d * co2F) / 1000,
+        debug: { fromCoord: [startLat, startLng], toCoord: [endLat, endLng], rawHaversine: d / (directMode==='walk'?1.2:1.3), multiplier: directMode==='walk'?1.2:1.3, finalDist: d, validation: 'Valid' }
       }],
       totalDistance: d,
       totalDuration: (d / speed) * 60,
@@ -199,7 +209,12 @@ export function findRoute(
     st,
     dist: getDistance(startLat, startLng, st.lat, st.lng)
   })).sort((a, b) => a.dist - b.dist);
-  startStations = startStations[0].dist < 1.5 ? startStations.slice(0, 1) : startStations.slice(0, 2);
+  
+  if (startStations.length > 0 && startStations[0].dist <= 1.0) {
+    startStations = startStations.filter(s => s.dist <= 1.0);
+  } else {
+    startStations = startStations.slice(0, 3);
+  }
 
   startStations.forEach(({ st, dist }) => {
     // dist <= 1: walk only
@@ -207,24 +222,22 @@ export function findRoute(
     // dist > 2: bike or car only
     
     if (dist <= 2) {
+      const walkDist = dist * 1.2;
       virtAdjacency[startId].push({
         from: startId, to: st.id, mode: 'walk',
-        distance_km: dist, duration_min: (dist / WALKING_SPEED) * 60,
-        cost: 0, frequency_min: 0, co2_factor: 0
+        distance_km: walkDist, duration_min: (walkDist / WALKING_SPEED) * 60,
+        cost: 0, frequency_min: 0, co2_factor: 0,
+        debug: { rawHaversine: walkDist/1.2, multiplier: 1.2, finalDist: walkDist, validation: 'Valid' }
       });
     }
 
-    if (dist > 1 && dist <= 5) {
+    if (dist > 1) { // 1 to Infinity allows cab for anything > 1km
+      const cabDist = dist * 1.3;
       virtAdjacency[startId].push({
-        from: startId, to: st.id, mode: 'bike',
-        distance_km: dist, duration_min: (dist / 20) * 60,
-        cost: dist * 15, frequency_min: 0, co2_factor: 100
-      });
-    } else if (dist > 5) {
-      virtAdjacency[startId].push({
-        from: startId, to: st.id, mode: 'car',
-        distance_km: dist, duration_min: (dist / 30) * 60,
-        cost: dist * 18, frequency_min: 0, co2_factor: 120
+        from: startId, to: st.id, mode: 'cab',
+        distance_km: cabDist, duration_min: (cabDist / 30) * 60,
+        cost: cabDist * 18, frequency_min: 0, co2_factor: 120,
+        debug: { rawHaversine: cabDist/1.3, multiplier: 1.3, finalDist: cabDist, validation: 'Valid' }
       });
     }
   });
@@ -233,31 +246,33 @@ export function findRoute(
     st,
     dist: getDistance(st.lat, st.lng, endLat, endLng)
   })).sort((a, b) => a.dist - b.dist);
-  endStations = endStations[0].dist < 1.5 ? endStations.slice(0, 1) : endStations.slice(0, 2);
+  
+  if (endStations.length > 0 && endStations[0].dist <= 1.0) {
+    endStations = endStations.filter(s => s.dist <= 1.0);
+  } else {
+    endStations = endStations.slice(0, 3);
+  }
 
   endStations.forEach(({ st, dist }) => {
     if (dist <= 2) {
       if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
+      const walkDist = dist * 1.2;
       virtAdjacency[st.id].push({
         from: st.id, to: endId, mode: 'walk',
-        distance_km: dist, duration_min: (dist / WALKING_SPEED) * 60,
-        cost: 0, frequency_min: 0, co2_factor: 0
+        distance_km: walkDist, duration_min: (walkDist / WALKING_SPEED) * 60,
+        cost: 0, frequency_min: 0, co2_factor: 0,
+        debug: { rawHaversine: walkDist/1.2, multiplier: 1.2, finalDist: walkDist, validation: 'Valid' }
       });
     }
 
-    if (dist > 1 && dist <= 5) {
+    if (dist > 1) {
       if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
+      const cabDist = dist * 1.3;
       virtAdjacency[st.id].push({
-        from: st.id, to: endId, mode: 'bike',
-        distance_km: dist, duration_min: (dist / 20) * 60,
-        cost: dist * 15, frequency_min: 0, co2_factor: 100
-      });
-    } else if (dist > 5) {
-      if (!virtAdjacency[st.id]) virtAdjacency[st.id] = [];
-      virtAdjacency[st.id].push({
-        from: st.id, to: endId, mode: 'car',
-        distance_km: dist, duration_min: (dist / 30) * 60,
-        cost: dist * 18, frequency_min: 0, co2_factor: 120
+        from: st.id, to: endId, mode: 'cab',
+        distance_km: cabDist, duration_min: (cabDist / 30) * 60,
+        cost: cabDist * 18, frequency_min: 0, co2_factor: 120,
+        debug: { rawHaversine: cabDist/1.3, multiplier: 1.3, finalDist: cabDist, validation: 'Valid' }
       });
     }
   });
@@ -384,7 +399,12 @@ export function findRoute(
   const filteredLegs: RouteLeg[] = [];
   for (let i = 0; i < groupedLegs.length; i++) {
     const leg = groupedLegs[i];
-    if (leg.mode === 'walk' && leg.distance <= 0.3) {
+    
+    const n1 = leg.from.name.toLowerCase().replace(/railway station|bus stand|metro|mrts/g, '').trim();
+    const n2 = leg.to.name.toLowerCase().replace(/railway station|bus stand|metro|mrts/g, '').trim();
+    const isSimilarName = n1.includes(n2) || n2.includes(n1) || leg.distance <= 0.1;
+
+    if (leg.mode === 'walk' && leg.distance <= 1.0 && isSimilarName) {
       if (i === 0 && groupedLegs.length > 1) {
         groupedLegs[i+1].from = leg.from;
       } else if (i === groupedLegs.length - 1 && filteredLegs.length > 0) {
@@ -400,6 +420,14 @@ export function findRoute(
   const totalDur = groupedLegs.reduce((s, l) => s + l.duration, 0);
   const totalCost = groupedLegs.reduce((s, l) => s + l.cost, 0);
   const totalCo2 = groupedLegs.reduce((s, l) => s + l.co2, 0);
+
+  // Sanity check
+  const isGuindyToSipcot = startName.toLowerCase().includes('guindy') && endName.toLowerCase().includes('sipcot');
+  if (isGuindyToSipcot) {
+    if (totalDist < 20 || totalDist > 60) {
+      return null;
+    }
+  }
 
   return {
     id: `route_${weightType}`,

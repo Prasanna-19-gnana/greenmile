@@ -16,7 +16,13 @@ const NORMALIZATION_MAP: Record<string, string> = {
   'tambaram': 'Tambaram Railway Station',
   'tambaram station': 'Tambaram Railway Station',
   'chennai central': 'Chennai Central',
-  'central': 'Chennai Central'
+    'central': 'Chennai Central',
+  'anna nagar': 'Anna Nagar',
+  'anna nagar east': 'Anna Nagar East Metro',
+  'thirumangalam': 'Thirumangalam Metro',
+  'marina beach': 'Marina Beach',
+  'chepauk': 'Chepauk MRTS',
+  'triplicane': 'Triplicane / Marina'
 };
 
 const GEOCODING: Record<string, [number, number]> = {
@@ -31,6 +37,11 @@ const GEOCODING: Record<string, [number, number]> = {
   'T Nagar': [13.0418, 80.2341],
   'Anna Nagar': [13.0827, 80.2116],
   'Marina Beach': [13.0500, 80.2824],
+  'Anna Nagar East Metro': [13.0848, 80.2198],
+  'Thirumangalam Metro': [13.0852, 80.1948],
+  'Government Estate': [13.0673, 80.2730],
+  'Chepauk MRTS': [13.0645, 80.2818],
+  'Triplicane / Marina': [13.0560, 80.2800],
 };
 
 function normalizePlace(place: string): string {
@@ -123,14 +134,14 @@ export async function POST(request: NextRequest) {
 
     let allRoutes: RouteOption[] = [];
     const carRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'car');
-    carRoute.label = "Direct Car";
+    if(carRoute) carRoute.label = "Direct Car";
 
     if (directDistance <= 2) {
       const walkRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'walk');
       const autoRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'bike');
-      walkRoute.label = "Walk";
-      autoRoute.label = "Auto";
-      allRoutes = [walkRoute, autoRoute];
+      if(walkRoute) walkRoute.label = "Walk";
+      if(autoRoute) autoRoute.label = "Auto";
+      allRoutes = [walkRoute, autoRoute].filter(r => r !== null) as RouteOption[];
     } else {
       const timeRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time');
       
@@ -138,39 +149,38 @@ export async function POST(request: NextRequest) {
 
       if (isTransitFailed) {
         const cabRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'car');
-        cabRoute.id = 'route_cab';
-        cabRoute.label = 'Direct Cab';
-        cabRoute.legs[0].mode = 'cab';
-        cabRoute.legs[0].cost = cabRoute.legs[0].distance * 18;
-        cabRoute.totalCost = cabRoute.legs[0].cost;
+        if(cabRoute) { cabRoute.id = 'route_cab'; cabRoute.label = 'Direct Cab'; cabRoute.legs[0].mode = 'cab'; cabRoute.legs[0].cost = cabRoute.legs[0].distance * 18; cabRoute.totalCost = cabRoute.legs[0].cost; }
+        
 
         const busRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'time', 'car');
-        busRoute.id = 'route_bus';
-        busRoute.label = 'Intercity Bus';
-        busRoute.legs[0].mode = 'bus';
-        busRoute.legs[0].co2 = (busRoute.legs[0].distance * 30) / 1000;
-        busRoute.legs[0].cost = busRoute.legs[0].distance * 1.5;
-        busRoute.legs[0].duration = busRoute.legs[0].distance * (60/40);
-        busRoute.totalCo2 = busRoute.legs[0].co2;
-        busRoute.totalCost = busRoute.legs[0].cost;
-        busRoute.totalDuration = busRoute.legs[0].duration;
+        if(busRoute) {
+          busRoute.id = 'route_bus';
+          busRoute.label = 'Intercity Bus';
+          busRoute.legs[0].mode = 'bus';
+          busRoute.legs[0].co2 = (busRoute.legs[0].distance * 30) / 1000;
+          busRoute.legs[0].cost = busRoute.legs[0].distance * 1.5;
+          busRoute.legs[0].duration = busRoute.legs[0].distance * (60/40);
+          busRoute.totalCo2 = busRoute.legs[0].co2;
+          busRoute.totalCost = busRoute.legs[0].cost;
+          busRoute.totalDuration = busRoute.legs[0].duration;
+        }
 
-        allRoutes = [busRoute, carRoute, cabRoute];
+        allRoutes = [busRoute, carRoute, cabRoute].filter(r => r !== null) as RouteOption[];
       } else {
         const costRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'cost') || timeRoute;
         const co2Route = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'co2') || timeRoute;
         const balancedRoute = findRoute(startCoords[0], startCoords[1], normSource, endCoords[0], endCoords[1], normDest, 'balanced') || timeRoute;
         
-        balancedRoute.label = "Best Balanced Route";
-        timeRoute.label = "Fastest Route";
-        co2Route.label = "Lowest Carbon Route";
-        costRoute.label = "Cheapest Route";
+        if(balancedRoute) balancedRoute.label = "Best Balanced Route";
+        if(timeRoute) timeRoute.label = "Fastest Route";
+        if(co2Route) co2Route.label = "Lowest Carbon Route";
+        if(costRoute) costRoute.label = "Cheapest Route";
         
-        allRoutes = [balancedRoute, timeRoute, co2Route, costRoute, carRoute];
+        allRoutes = [balancedRoute, timeRoute, co2Route, costRoute, carRoute].filter(r => r !== null) as RouteOption[];
       }
     }
-    const carCo2 = carRoute.totalCo2;
-    const carCost = carRoute.totalCost;
+    const carCo2 = carRoute ? carRoute.totalCo2 : 0;
+    const carCost = carRoute ? carRoute.totalCost : 0;
 
     const uniqueRoutesMap = new Map<string, RouteOption>();
     
@@ -289,7 +299,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       source,
       destination,
-      distance: Math.round(carRoute.totalDistance * 10) / 10,
+      distance: Math.round((carRoute ? carRoute.totalDistance : directDistance) * 10) / 10,
       modes,
       debug: {
         source, destination, normSource, normDest, startCoords, endCoords, distance: directDistance,

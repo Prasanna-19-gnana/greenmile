@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 
 const modeIcons: Record<string, string> = {
   car: '🚗',
@@ -10,6 +10,8 @@ const modeIcons: Record<string, string> = {
   metro: '🚇',
   cycle: '🚲',
   walk: '🚶',
+  train: '🚆',
+  cab: '🚕',
 };
 
 const modeLabels: Record<string, string> = {
@@ -18,6 +20,8 @@ const modeLabels: Record<string, string> = {
   metro: 'Metro',
   cycle: 'Cycle',
   walk: 'Walk',
+  train: 'Train',
+  cab: 'Cab',
 };
 
 function RewardContent() {
@@ -28,6 +32,60 @@ function RewardContent() {
   const costSaved = parseFloat(searchParams.get('costSaved') || '0');
   const source = searchParams.get('source') || '';
   const destination = searchParams.get('destination') || '';
+  
+  const savedRef = useRef(false);
+
+  useEffect(() => {
+    // Only run this logic on the client
+    if (typeof window === 'undefined' || savedRef.current) return;
+    
+    // Prevent multiple executions in dev mode (React strict mode)
+    savedRef.current = true;
+
+    if (!source || !destination || pointsEarned <= 0) return;
+
+    // Deterministic Trip ID to prevent refresh duplicates
+    const tripId = `${source}_${destination}_${selectedMode}_${co2Saved}_${pointsEarned}`;
+    
+    try {
+      const historyJson = localStorage.getItem('greenmile_trip_history');
+      const tripHistory = historyJson ? JSON.parse(historyJson) : [];
+      
+      // Check if trip already exists
+      const tripExists = tripHistory.some((trip: any) => trip.id === tripId);
+      
+      if (!tripExists) {
+        // Add trip to history
+        const newTrip = {
+          id: tripId,
+          source,
+          destination,
+          selectedMode,
+          co2Saved,
+          pointsEarned,
+          timestamp: new Date().toISOString()
+        };
+        tripHistory.unshift(newTrip); // Add to top
+        localStorage.setItem('greenmile_trip_history', JSON.stringify(tripHistory));
+        
+        // Update wallet points
+        const currentPoints = parseInt(localStorage.getItem('greenmile_wallet_points') || '0', 10);
+        localStorage.setItem('greenmile_wallet_points', (currentPoints + pointsEarned).toString());
+        
+        // Update lifetime points
+        const lifetimePoints = parseInt(localStorage.getItem('greenmile_lifetime_points') || '0', 10);
+        localStorage.setItem('greenmile_lifetime_points', (lifetimePoints + pointsEarned).toString());
+        
+        // Update total CO2 saved
+        const currentCo2 = parseFloat(localStorage.getItem('greenmile_total_co2_saved') || '0');
+        localStorage.setItem('greenmile_total_co2_saved', (currentCo2 + co2Saved).toString());
+        
+        console.log(`Successfully logged trip ${tripId}. Earned ${pointsEarned} points.`);
+      }
+    } catch (e) {
+      console.error('Failed to save trip data to localStorage', e);
+    }
+  }, [source, destination, selectedMode, co2Saved, pointsEarned]);
 
   const formatLabel = (mode: string) => {
     if (mode.startsWith('route_')) {
@@ -59,7 +117,6 @@ function RewardContent() {
 
   return (
     <div className="page-transition">
-      {/* Confetti-like decoration */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         {[...Array(12)].map((_, i) => (
           <div
@@ -79,7 +136,6 @@ function RewardContent() {
       </div>
 
       <div className="relative max-w-3xl mx-auto px-4 py-12 sm:py-16 text-center">
-        {/* Celebration Header */}
         <div className="animate-count-up">
           <span className="text-7xl sm:text-8xl inline-block">🎉</span>
         </div>
@@ -97,7 +153,6 @@ function RewardContent() {
           </p>
         )}
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-10">
           {stats.map((stat, index) => (
             <div
@@ -114,7 +169,6 @@ function RewardContent() {
           ))}
         </div>
 
-        {/* Impact Message */}
         <div className="mt-8 bg-green-50 rounded-2xl p-6 border border-green-100 animate-fade-in">
           <p className="text-green-800 font-medium">
             🌳 Your CO₂ savings are equivalent to{' '}
@@ -123,7 +177,6 @@ function RewardContent() {
           </p>
         </div>
 
-        {/* Action Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Link
             href="/dashboard"

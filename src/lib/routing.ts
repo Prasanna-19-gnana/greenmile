@@ -309,6 +309,24 @@ export function findRoute(
       
       let weight = getWeight(conn, weightType, !!isModeSwitch);
 
+      // Strict penalty for hopping off the train early for Chennai Central trips
+      const isCentralTrip = endName.toLowerCase().includes('central');
+      if (isCentralTrip && conn.to === endId) {
+        const fromNode = stations[conn.from];
+        if (fromNode) {
+          const fromName = fromNode.name.toLowerCase();
+          if (fromName.includes('mambalam') || fromName.includes('kodambakkam') || 
+              fromName.includes('saidapet') || fromName.includes('guindy')) {
+            weight += 10000; // Massive penalty
+          }
+        }
+      }
+
+      // Add a general transfer penalty to encourage staying on the transit network until the end
+      if (conn.to === endId && isModeSwitch) {
+        weight += 20; // +20 min penalty for final transfer to dest
+      }
+
       // Regional Detour Penalty
       // If a node takes us significantly further North/West than start and end, penalize heavily
       const toStation = stations[conn.to];

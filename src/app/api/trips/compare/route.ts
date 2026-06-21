@@ -22,7 +22,8 @@ const NORMALIZATION_MAP: Record<string, string> = {
   'thirumangalam': 'Thirumangalam Metro',
   'marina beach': 'Marina Beach',
   'chepauk': 'Chepauk MRTS',
-  'triplicane': 'Triplicane / Marina'
+  'triplicane': 'Triplicane / Marina',
+  'puratchi thalaivar dr m.g.r central': 'Chennai Central'
 };
 
 const GEOCODING: Record<string, [number, number]> = {
@@ -191,21 +192,26 @@ export async function POST(request: NextRequest) {
       let isValid = true;
       let totalGraphDistance = 0;
 
-      for (const leg of r.legs) {
+      for (let i = 0; i < r.legs.length; i++) {
+        const leg = r.legs[i];
         const fromLat = typeof leg.from === 'string' ? 0 : leg.from.lat;
         const fromLng = typeof leg.from === 'string' ? 0 : leg.from.lng;
         const toLat = typeof leg.to === 'string' ? 0 : leg.to.lat;
         const toLng = typeof leg.to === 'string' ? 0 : leg.to.lng;
 
-        // Skip missing coordinate validation for bus stops as they might be unmapped, 
-        // but reject if they are explicitly 0,0 which causes massive bounds
         if ((fromLat === 0 && fromLng === 0) || (toLat === 0 && toLng === 0)) {
-           // isValid = false; // Currently skipping strict 0,0 check here since we nullified them in build_graph.
+           // Skip strict 0,0 check
         }
 
         if (leg.distance === 0 && leg.from !== leg.to) {
           isValid = false; // Invalid 0 distance edge
         }
+
+        // Final walk leg distance validation (max 2km)
+        if (i === r.legs.length - 1 && leg.mode === 'walk' && leg.distance > 2) {
+          isValid = false; 
+        }
+
         totalGraphDistance += leg.distance;
       }
 
@@ -236,20 +242,22 @@ export async function POST(request: NextRequest) {
 
     // Generate explanations concurrently
     const routePromises = uniqueRoutes.map(async (r) => {
-      // Explain the route using Gemini
-      let explanation = "";
-      try {
-        explanation = await explainRoute(r);
-        if (!explanation || explanation.trim() === "") {
-          explanation = `Take the recommended route shown above. This route saves ${Math.round(Math.max(0, carCo2 - r.totalCo2))} kg CO2 compared with car.`;
-        }
-      } catch (err) {
-        explanation = `Take the recommended route shown above. This route saves ${Math.round(Math.max(0, carCo2 - r.totalCo2))} kg CO2 compared with car.`;
-      }
-      
       const co2Saved = Math.max(0, carCo2 - r.totalCo2);
       const costSaved = Math.max(0, carCost - r.totalCost);
       const greenScore = Math.max(0, 100 - (r.totalCo2 / carCo2) * 100);
+
+      // Explain the route using Gemini
+      let explanation = "";
+      const localFallback = `Take the recommended route shown above. This route takes approximately ${Math.round(r.totalDuration)} min and saves ${Math.round(co2Saved)} kg CO2 compared with driving.`;
+      
+      try {
+        explanation = await explainRoute(r);
+        if (!explanation || explanation.trim() === "") {
+          explanation = localFallback;
+        }
+      } catch (err) {
+        explanation = localFallback;
+      }
       
       return {
         // UI fields
